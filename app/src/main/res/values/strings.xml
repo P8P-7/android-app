@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">IDP 7</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="hint_message">Please enter a message</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_sub_address">Subscriber address / port</string>
+    <string name="pref_default_sub_address">tcp://127.0.0.1:5555</string>
+
+    <string name="pref_title_pub_address">Publisher address / port</string>
+    <string name="pref_default_pub_address">tcp://127.0.0.1:5556</string>
+
+    <string name="pref_title_sub_channel">Subscriber channel</string>
+    <string name="pref_title_pub_channel">Publisher channel</string>
+
+    <string-array name="pref_channel_list_titles">
+        <item>Default</item>
+        <item>Command</item>
+    </string-array>
+    <string-array name="pref_channel_list_values">
+        <item>default</item>
+        <item>command</item>
+    </string-array>
+</resources>
