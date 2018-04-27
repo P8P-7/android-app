@@ -3,20 +3,23 @@ package nl.team_goliath.app.network;
 import android.os.Handler;
 import android.util.Log;
 
-import nl.team_goliath.app.Util;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.zeromq.ZMQ;
 
 import java.util.concurrent.CountDownLatch;
 
-import idp.MessageOuterClass.Content;
+import nl.team_goliath.app.Util;
+import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
+import nl.team_goliath.app.protos.CommandMessageProtos.Command;
+import nl.team_goliath.app.protos.ConfigCommandProtos.ConfigCommand;
+import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
 
 public class Subscriber extends Thread implements Runnable {
     private static final String TAG = Subscriber.class.getSimpleName();
 
     private String address;
-    private String channel;
+    private CommandMessage.Channel channel;
     private ZMQ.Socket mulServiceSubscriber;
     private Handler handler;
 
@@ -33,7 +36,7 @@ public class Subscriber extends Thread implements Runnable {
         this.handler = handler;
     }
 
-    public void subscribe(final String channel) {
+    public void subscribe(final  CommandMessage.Channel channel) {
         this.channel = channel;
         new Thread() {
             @Override
@@ -43,7 +46,7 @@ public class Subscriber extends Thread implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                mulServiceSubscriber.subscribe(channel.getBytes());
+                mulServiceSubscriber.subscribe(String.valueOf(channel.getNumber()));
             }
         }.start();
     }
@@ -52,7 +55,7 @@ public class Subscriber extends Thread implements Runnable {
         new Thread() {
             @Override
             public void run() {
-                mulServiceSubscriber.unsubscribe(channel.getBytes());
+                mulServiceSubscriber.unsubscribe(String.valueOf(channel.getNumber()));
             }
         }.start();
     }
@@ -70,14 +73,36 @@ public class Subscriber extends Thread implements Runnable {
         while (!Thread.interrupted()) {
             String channel = mulServiceSubscriber.recvStr();
             byte[] reply = mulServiceSubscriber.recv(0);
-            Content data = null;
+            Command command = null;
             try {
-                data = Content.parseFrom(reply);
+                command = Command.parseFrom(reply);
             } catch (InvalidProtocolBufferException ignored) {
             }
-            if (data != null && handler != null) {
-                Log.v(TAG, "Subscriber receive. Channel: " + channel + " Data: " + data.getContent());
-                handler.sendMessage(Util.bundledMessage(handler, data));
+            if (command != null && handler != null) {
+                switch (command.getCommandCase()) {
+                    case MOVECOMMAND:
+                        MoveCommand moveCommand = command.getMoveCommand();
+
+
+                        Log.v(TAG, "[" + channel + "] [ move ] speed: " +
+                                moveCommand.getSpeed() +
+                                " direction: " +
+                                moveCommand.getDirection());
+                        break;
+                    case CONFIGCOMMAND:
+                        ConfigCommand configCommand = command.getConfigCommand();
+
+
+                        Log.v(TAG, "[" + channel + "] [ config ] name: " +
+                                configCommand.getName() +
+                                " value: " +
+                                configCommand.getValue());
+                        break;
+                    case COMMAND_NOT_SET:
+                    default:
+                        Log.v(TAG, "Command not set");
+                }
+                handler.sendMessage(Util.bundledMessage(handler, command));
             }
         }
     }

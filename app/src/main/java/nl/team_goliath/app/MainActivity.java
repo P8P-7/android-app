@@ -12,21 +12,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import nl.team_goliath.app.network.MessageListenerHandler;
-import nl.team_goliath.app.network.Publisher;
-import nl.team_goliath.app.network.Subscriber;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import idp.MessageOuterClass.Message;
-import idp.MessageOuterClass.Content;
+import nl.team_goliath.app.network.MessageListenerHandler;
+import nl.team_goliath.app.network.Publisher;
+import nl.team_goliath.app.network.Subscriber;
+import nl.team_goliath.app.protos.CommandMessageProtos.Command;
+import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
+import nl.team_goliath.app.protos.ConfigCommandProtos.ConfigCommand;
+import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
 
 public class MainActivity extends AppCompatActivity {
-    private static String PUB_CHANNEL;
+    private static CommandMessage.Channel PUB_CHANNEL;
+    private static Command.CommandCase COMMAND = Command.CommandCase.CONFIGCOMMAND;
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
@@ -58,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
         subscriber.setMessageHandler(clientMessageHandler);
         subscriber.start();
 
-        subscriber.subscribe(prefs.getString("sub_channel", "default"));
+        subscriber.subscribe(CommandMessage.Channel.valueOf(prefs.getString("sub_channel", CommandMessage.Channel.DEFAULT.name())));
 
         publisher = new Publisher(prefs.getString("pub_address", getString(R.string.pref_default_pub_address)));
         publisher.start();
 
-        PUB_CHANNEL = prefs.getString("pub_channel", "default");
+        PUB_CHANNEL = CommandMessage.Channel.valueOf(prefs.getString("pub_channel", CommandMessage.Channel.DEFAULT.name()));
 
         listener = (prefs1, key) -> {
             String value = prefs1.getString(key, "");
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     subscriber = new Subscriber(value);
                     subscriber.start();
 
-                    subscriber.subscribe(prefs1.getString("sub_channel", "default"));
+                    subscriber.subscribe(CommandMessage.Channel.valueOf(prefs1.getString("sub_channel", CommandMessage.Channel.DEFAULT.name())));
                     break;
                 case "pub_address":
                     publisher.interrupt();
@@ -83,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case "sub_channel":
                     subscriber.unsubscribe();
-                    subscriber.subscribe(value);
+                    subscriber.subscribe(CommandMessage.Channel.valueOf(value));
                     break;
                 case "pub_channel":
-                    PUB_CHANNEL = value;
+                    PUB_CHANNEL = CommandMessage.Channel.valueOf(value);
                     break;
 
             }
@@ -96,13 +99,37 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            Content data = Content.newBuilder()
-                    .setContent(messageEditText.getText().toString())
-                    .build();
+            if (COMMAND.equals(Command.CommandCase.COMMAND_NOT_SET)) {
+                Toast.makeText(getApplicationContext(), R.string.command_not_set_error, Toast.LENGTH_LONG).show();
+                return;
+            }
 
-            Message send = Message.newBuilder()
+            Command command;
+            switch (COMMAND) {
+                case MOVECOMMAND:
+                    MoveCommand move = MoveCommand.newBuilder()
+                            .setDirection(1)
+                            .setSpeed(Integer.parseInt(messageEditText.getText().toString()))
+                            .build();
+                    command = Command.newBuilder()
+                            .setMoveCommand(move)
+                            .build();
+                    break;
+                case CONFIGCOMMAND:
+                default:
+                    ConfigCommand config = ConfigCommand.newBuilder()
+                            .setName("test")
+                            .setValue(messageEditText.getText().toString())
+                            .build();
+                    command = Command.newBuilder()
+                            .setConfigCommand(config)
+                            .build();
+                    break;
+            }
+
+            CommandMessage send = CommandMessage.newBuilder()
                     .setChannel(PUB_CHANNEL)
-                    .setData(data)
+                    .setCommand(command)
                     .build();
 
             publisher.sendMessage(send);

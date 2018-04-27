@@ -10,7 +10,7 @@
         android:title="@string/pref_title_sub_address" />
 
     <ListPreference
-        android:defaultValue="default"
+        android:defaultValue="DEFAULT"
         android:entries="@array/pref_channel_list_titles"
         android:entryValues="@array/pref_channel_list_values"
         android:key="sub_channel"
@@ -28,7 +28,7 @@
         android:title="@string/pref_title_pub_address" />
 
     <ListPreference
-        android:defaultValue="default"
+        android:defaultValue="DEFAULT"
         android:entries="@array/pref_channel_list_titles"
         android:entryValues="@array/pref_channel_list_values"
         android:key="pub_channel"

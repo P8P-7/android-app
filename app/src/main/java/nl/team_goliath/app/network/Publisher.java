@@ -7,20 +7,20 @@ import org.zeromq.ZMQ;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import idp.MessageOuterClass.Message;
+import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
 
 public class Publisher extends Thread implements Runnable {
     private static final String TAG = Publisher.class.getSimpleName();
 
     private String address;
-    private BlockingQueue<Message> messages;
+    private BlockingQueue<CommandMessage> messages;
 
     public Publisher(String address) {
         this.address = address;
         messages = new ArrayBlockingQueue<>(1024);
     }
 
-    public void sendMessage(Message message) {
+    public void sendMessage(CommandMessage message) {
         messages.add(message);
     }
 
@@ -34,10 +34,10 @@ public class Publisher extends Thread implements Runnable {
 
         while (!Thread.interrupted()) {
             try {
-                Message message = messages.take();
-                publisher.sendMore(message.getChannel().getBytes());
-                publisher.send(message.getData().toByteArray(), 0);
-                Log.v(TAG, "Publisher send: " + message.getData().getContent());
+                CommandMessage message = messages.take();
+                publisher.sendMore(String.valueOf(message.getChannel().getNumber()));
+                publisher.send(message.getCommand().toByteArray(), 0);
+                Log.v(TAG, "Publisher send: " + message.getCommand().getCommandCase());
             } catch (InterruptedException ignored) {
             }
         }

@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="hint_message">Please enter a message</string>
+    <string name="command_not_set_error">Command not set!</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -21,10 +22,8 @@
 
     <string-array name="pref_channel_list_titles">
         <item>Default</item>
-        <item>Command</item>
     </string-array>
     <string-array name="pref_channel_list_values">
-        <item>default</item>
-        <item>command</item>
+        <item>DEFAULT</item>
     </string-array>
 </resources>
