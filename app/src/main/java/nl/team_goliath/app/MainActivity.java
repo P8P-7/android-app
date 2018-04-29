@@ -4,37 +4,38 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import io.github.controlwear.virtual.joystick.android.JoystickView;
 import nl.team_goliath.app.network.MessageListenerHandler;
 import nl.team_goliath.app.network.Publisher;
 import nl.team_goliath.app.network.Subscriber;
 import nl.team_goliath.app.protos.CommandMessageProtos.Command;
 import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
-import nl.team_goliath.app.protos.ConfigCommandProtos.ConfigCommand;
 import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static CommandMessage.Channel PUB_CHANNEL;
-    private static Command.CommandCase COMMAND = Command.CommandCase.CONFIGCOMMAND;
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
-    private TextView textView;
-    private EditText messageEditText;
+    private TextView textViewAngleLeft;
+    private TextView textViewStrengthLeft;
+
+    private TextView textViewAngleRight;
+    private TextView textViewStrengthRight;
+    private TextView textViewCoordinateRight;
 
     private Publisher publisher;
     private Subscriber subscriber;
@@ -52,10 +53,27 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        textView = findViewById(R.id.console);
-        textView.setMovementMethod(new ScrollingMovementMethod());
+        textViewAngleLeft = findViewById(R.id.textView_angle_left);
+        textViewStrengthLeft = findViewById(R.id.textView_strength_left);
 
-        messageEditText = findViewById(R.id.message);
+        JoystickView joystickLeft = findViewById(R.id.joystickView_left);
+        joystickLeft.setOnMoveListener((angle, strength) -> {
+            textViewAngleLeft.setText(getString(R.string.angle, angle));
+            textViewStrengthLeft.setText(getString(R.string.strength, strength));
+            // sendMoveCommand(angle, strength);
+        });
+
+        textViewAngleRight = findViewById(R.id.textView_angle_right);
+        textViewStrengthRight = findViewById(R.id.textView_strength_right);
+        textViewCoordinateRight = findViewById(R.id.textView_coordinate_right);
+
+        final JoystickView joystickRight = findViewById(R.id.joystickView_right);
+        joystickRight.setOnMoveListener((angle, strength) -> {
+            textViewAngleRight.setText(getString(R.string.angle, angle));
+            textViewStrengthRight.setText(getString(R.string.strength, strength));
+            textViewCoordinateRight.setText(getString(R.string.coordinate, joystickRight.getNormalizedX(), joystickRight.getNormalizedY()));
+            // sendMoveCommand(angle, strength);
+        });
 
         subscriber = new Subscriber(prefs.getString("sub_address", getString(R.string.pref_default_sub_address)));
         subscriber.setMessageHandler(clientMessageHandler);
@@ -96,44 +114,27 @@ public class MainActivity extends AppCompatActivity {
         };
 
         prefs.registerOnSharedPreferenceChangeListener(listener);
+    }
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
-            if (COMMAND.equals(Command.CommandCase.COMMAND_NOT_SET)) {
-                Toast.makeText(getApplicationContext(), R.string.command_not_set_error, Toast.LENGTH_LONG).show();
-                return;
-            }
+    /*
+     * TODO
+     */
+    private void sendMoveCommand(int direction, int speed) {
+        MoveCommand move = MoveCommand.newBuilder()
+                .setDirection(direction)
+                .setSpeed(speed)
+                .build();
 
-            Command command;
-            switch (COMMAND) {
-                case MOVECOMMAND:
-                    MoveCommand move = MoveCommand.newBuilder()
-                            .setDirection(1)
-                            .setSpeed(Integer.parseInt(messageEditText.getText().toString()))
-                            .build();
-                    command = Command.newBuilder()
-                            .setMoveCommand(move)
-                            .build();
-                    break;
-                case CONFIGCOMMAND:
-                default:
-                    ConfigCommand config = ConfigCommand.newBuilder()
-                            .setName("test")
-                            .setValue(messageEditText.getText().toString())
-                            .build();
-                    command = Command.newBuilder()
-                            .setConfigCommand(config)
-                            .build();
-                    break;
-            }
+        Command command = Command.newBuilder()
+                .setMoveCommand(move)
+                .build();
 
-            CommandMessage send = CommandMessage.newBuilder()
-                    .setChannel(PUB_CHANNEL)
-                    .setCommand(command)
-                    .build();
+        CommandMessage send = CommandMessage.newBuilder()
+                .setChannel(PUB_CHANNEL)
+                .setCommand(command)
+                .build();
 
-            publisher.sendMessage(send);
-        });
+        publisher.sendMessage(send);
     }
 
     private static String getTimeString() {
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void clientMessageReceived(String messageBody) {
-        textView.append(getTimeString() + " - client received: " + messageBody + "\n");
+        Log.d(TAG, getTimeString() + " - client received: " + messageBody + "\n");
     }
 
     @Override
