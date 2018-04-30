@@ -24,7 +24,15 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
+
+        <service
+            android:name=".services.ZMQSubscribeService"
+            android:exported="false" />
+
+        <service
+            android:name=".services.ZMQPublishService"
+            android:exported="false" />
     </application>
 
 </manifest>

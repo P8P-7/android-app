@@ -1,8 +1,12 @@
 package nl.team_goliath.app;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,18 +21,77 @@ import java.util.Date;
 import java.util.Locale;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
-import nl.team_goliath.app.network.MessageListenerHandler;
-import nl.team_goliath.app.network.Publisher;
-import nl.team_goliath.app.network.Subscriber;
-import nl.team_goliath.app.protos.CommandMessageProtos.Command;
-import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
+import nl.team_goliath.app.interfaces.IMessageListener;
+import nl.team_goliath.app.protos.IoConfigProtos.IoConfig;
+import nl.team_goliath.app.protos.MessageProtos.CommandMessage;
+import nl.team_goliath.app.protos.MessageProtos.ConfigMessage;
+import nl.team_goliath.app.protos.MessageProtos.Message;
 import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
+import nl.team_goliath.app.protos.StatsProtos.Stats;
+import nl.team_goliath.app.protos.VisionConfigProtos.VisionConfig;
+import nl.team_goliath.app.services.ZMQPublishService;
+import nl.team_goliath.app.services.ZMQSubscribeService;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IMessageListener {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static CommandMessage.Channel PUB_CHANNEL;
 
-    private SharedPreferences.OnSharedPreferenceChangeListener listener;
+    /**
+     * TCP Addresses
+     */
+    private static String SUB_ADDRESS;
+    private static String PUB_ADDRESS;
+
+    /**
+     * Binders
+     */
+    private ZMQSubscribeService.SubscribeBinder subscribeBinder = null;
+    private ZMQPublishService.PublishBinder publishBinder = null;
+
+    /**
+     * Flags indicating whether we have called bind on the service.
+     */
+    private boolean subscribeBound = false;
+    private boolean publishBound = false;
+
+    /**
+     * Classes for interacting with the main interface of the service.
+     */
+    private ServiceConnection subscribeServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            subscribeBinder = (ZMQSubscribeService.SubscribeBinder) service;
+            if (subscribeBinder != null) {
+                subscribeBinder.connect(SUB_ADDRESS);
+
+                // TODO Let users define on which channel they want to subscribe.
+                subscribeBinder.subscribe(Message.DataCase.COMMAND, MainActivity.this);
+                subscribeBound = true;
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            subscribeBinder = null;
+            subscribeBound = false;
+        }
+    };
+
+    private ServiceConnection publishServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            publishBinder = (ZMQPublishService.PublishBinder) service;
+            if (publishBinder != null) {
+                publishBinder.connect(PUB_ADDRESS);
+                publishBound = true;
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            publishBinder = null;
+            publishBound = false;
+        }
+    };
 
     private TextView textViewAngleLeft;
     private TextView textViewStrengthLeft;
@@ -37,12 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewStrengthRight;
     private TextView textViewCoordinateRight;
 
-    private Publisher publisher;
-    private Subscriber subscriber;
-
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ", Locale.US);
-
-    private final MessageListenerHandler clientMessageHandler = new MessageListenerHandler(this::clientMessageReceived, Util.MESSAGE_PAYLOAD_KEY);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         joystickLeft.setOnMoveListener((angle, strength) -> {
             textViewAngleLeft.setText(getString(R.string.angle, angle));
             textViewStrengthLeft.setText(getString(R.string.strength, strength));
-            // sendMoveCommand(angle, strength);
+            sendMoveCommand(angle, strength);
         });
 
         textViewAngleRight = findViewById(R.id.textView_angle_right);
@@ -72,77 +130,131 @@ public class MainActivity extends AppCompatActivity {
             textViewAngleRight.setText(getString(R.string.angle, angle));
             textViewStrengthRight.setText(getString(R.string.strength, strength));
             textViewCoordinateRight.setText(getString(R.string.coordinate, joystickRight.getNormalizedX(), joystickRight.getNormalizedY()));
-            // sendMoveCommand(angle, strength);
+            sendMoveCommand(angle, strength);
         });
 
-        subscriber = new Subscriber(prefs.getString("sub_address", getString(R.string.pref_default_sub_address)));
-        subscriber.setMessageHandler(clientMessageHandler);
-        subscriber.start();
+        SUB_ADDRESS = prefs.getString("sub_address", getString(R.string.pref_default_sub_address));
+        PUB_ADDRESS = prefs.getString("pub_address", getString(R.string.pref_default_pub_address));
 
-        subscriber.subscribe(CommandMessage.Channel.valueOf(prefs.getString("sub_channel", CommandMessage.Channel.DEFAULT.name())));
-
-        publisher = new Publisher(prefs.getString("pub_address", getString(R.string.pref_default_pub_address)));
-        publisher.start();
-
-        PUB_CHANNEL = CommandMessage.Channel.valueOf(prefs.getString("pub_channel", CommandMessage.Channel.DEFAULT.name()));
-
-        listener = (prefs1, key) -> {
+        SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs1, key) -> {
             String value = prefs1.getString(key, "");
 
             switch (key) {
                 case "sub_address":
-                    subscriber.interrupt();
-                    subscriber = new Subscriber(value);
-                    subscriber.start();
-
-                    subscriber.subscribe(CommandMessage.Channel.valueOf(prefs1.getString("sub_channel", CommandMessage.Channel.DEFAULT.name())));
+                    SUB_ADDRESS = value;
+                    subscribeBinder.disconnect();
+                    subscribeBinder.connect(SUB_ADDRESS);
                     break;
                 case "pub_address":
-                    publisher.interrupt();
-                    publisher = new Publisher(value);
-                    publisher.start();
+                    PUB_ADDRESS = value;
+                    publishBinder.disconnect();
+                    publishBinder.connect(PUB_ADDRESS);
                     break;
-                case "sub_channel":
-                    subscriber.unsubscribe();
-                    subscriber.subscribe(CommandMessage.Channel.valueOf(value));
-                    break;
-                case "pub_channel":
-                    PUB_CHANNEL = CommandMessage.Channel.valueOf(value);
-                    break;
-
             }
         };
 
         prefs.registerOnSharedPreferenceChangeListener(listener);
     }
 
-    /*
-     * TODO
-     */
     private void sendMoveCommand(int direction, int speed) {
+        if (!publishBound) return;
+
         MoveCommand move = MoveCommand.newBuilder()
                 .setDirection(direction)
                 .setSpeed(speed)
                 .build();
 
-        Command command = Command.newBuilder()
+        CommandMessage command = CommandMessage.newBuilder()
                 .setMoveCommand(move)
                 .build();
 
-        CommandMessage send = CommandMessage.newBuilder()
-                .setChannel(PUB_CHANNEL)
+        Message message = Message.newBuilder()
                 .setCommand(command)
                 .build();
 
-        publisher.sendMessage(send);
+        publishBinder.send(message);
     }
 
     private static String getTimeString() {
         return DATE_FORMAT.format(new Date());
     }
 
-    private void clientMessageReceived(String messageBody) {
-        Log.d(TAG, getTimeString() + " - client received: " + messageBody + "\n");
+    @Override
+    public void onMessageReceived(String channel, Message message) {
+        switch (message.getDataCase()) {
+            case COMMAND:
+                CommandMessage commandMessage = message.getCommand();
+
+                if (commandMessage.getCommandCase() == CommandMessage.CommandCase.MOVECOMMAND) {
+                    MoveCommand moveCommand = commandMessage.getMoveCommand();
+
+                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
+                            moveCommand.getSpeed()
+                            + " direction: " +
+                            moveCommand.getDirection()
+                    );
+                }
+                break;
+            case CONFIG:
+                ConfigMessage configMessage = message.getConfig();
+
+                if (configMessage.getConfigCase() == ConfigMessage.ConfigCase.IOCONFIG) {
+                    IoConfig ioConfig = configMessage.getIoConfig();
+
+                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] ip: " +
+                            ioConfig.getPublisherIp()
+                            + " port: " +
+                            ioConfig.getPublisherPort()
+                    );
+                } else if (configMessage.getConfigCase() == ConfigMessage.ConfigCase.VISIONCONFIG) {
+                    VisionConfig visionConfig = configMessage.getVisionConfig();
+
+                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] camera enabled: " +
+                            visionConfig.getCameraEnabled()
+                    );
+                }
+                break;
+            case STATS:
+                Stats stats = message.getStats();
+
+                Log.d(TAG, getTimeString() + " - client received [" + channel + "] total cpu usage: " +
+                        stats.getCpuUsage().getTotalUsage()
+                );
+                break;
+            case DATA_NOT_SET:
+            default:
+                Log.d(TAG, "Data not set");
+        }
+
+    }
+
+    @Override
+    public void onError(String message) {
+        Log.e(TAG, getTimeString() + " - client error: " + message);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Bind to the services
+        bindService(new Intent(this, ZMQSubscribeService.class), subscribeServiceConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, ZMQPublishService.class), publishServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (subscribeBinder != null) {
+            subscribeBinder.unsubscribe(Message.DataCase.STATS);
+            subscribeBinder.disconnect();
+        }
+        if (publishBinder != null) {
+            publishBinder.disconnect();
+        }
+
+        unbindService(subscribeServiceConnection);
+        unbindService(publishServiceConnection);
     }
 
     @Override

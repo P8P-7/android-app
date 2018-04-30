@@ -24,14 +24,4 @@
 
     <string name="pref_title_pub_address">Publisher address / port</string>
     <string name="pref_default_pub_address">tcp://127.0.0.1:5556</string>
-
-    <string name="pref_title_sub_channel">Subscriber channel</string>
-    <string name="pref_title_pub_channel">Publisher channel</string>
-
-    <string-array name="pref_channel_list_titles">
-        <item>Default</item>
-    </string-array>
-    <string-array name="pref_channel_list_values">
-        <item>DEFAULT</item>
-    </string-array>
 </resources>

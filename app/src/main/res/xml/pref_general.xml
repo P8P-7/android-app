@@ -9,15 +9,6 @@
         android:singleLine="true"
         android:title="@string/pref_title_sub_address" />
 
-    <ListPreference
-        android:defaultValue="DEFAULT"
-        android:entries="@array/pref_channel_list_titles"
-        android:entryValues="@array/pref_channel_list_values"
-        android:key="sub_channel"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_sub_channel" />
-
     <EditTextPreference
         android:defaultValue="@string/pref_default_pub_address"
         android:inputType="text"
@@ -26,14 +17,5 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_pub_address" />
-
-    <ListPreference
-        android:defaultValue="DEFAULT"
-        android:entries="@array/pref_channel_list_titles"
-        android:entryValues="@array/pref_channel_list_values"
-        android:key="pub_channel"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_pub_channel" />
 
 </PreferenceScreen>
