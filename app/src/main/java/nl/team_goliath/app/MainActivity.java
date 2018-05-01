@@ -23,8 +23,6 @@ import java.util.Locale;
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 import nl.team_goliath.app.interfaces.IMessageListener;
 import nl.team_goliath.app.protos.IoConfigProtos.IoConfig;
-import nl.team_goliath.app.protos.MessageProtos.CommandMessage;
-import nl.team_goliath.app.protos.MessageProtos.ConfigMessage;
 import nl.team_goliath.app.protos.MessageProtos.Message;
 import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
 import nl.team_goliath.app.protos.StatsProtos.Stats;
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
                 subscribeBinder.connect(SUB_ADDRESS);
 
                 // TODO Let users define on which channel they want to subscribe.
-                subscribeBinder.subscribe(Message.DataCase.COMMAND, MainActivity.this);
+                subscribeBinder.subscribe(Message.DataCase.MOVECOMMAND, MainActivity.this);
                 subscribeBound = true;
             }
         }
@@ -164,12 +162,8 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
                 .setSpeed(speed)
                 .build();
 
-        CommandMessage command = CommandMessage.newBuilder()
-                .setMoveCommand(move)
-                .build();
-
         Message message = Message.newBuilder()
-                .setCommand(command)
+                .setMoveCommand(move)
                 .build();
 
         publishBinder.send(message);
@@ -182,37 +176,30 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
     @Override
     public void onMessageReceived(String channel, Message message) {
         switch (message.getDataCase()) {
-            case COMMAND:
-                CommandMessage commandMessage = message.getCommand();
+            case MOVECOMMAND:
+                MoveCommand moveCommand = message.getMoveCommand();
 
-                if (commandMessage.getCommandCase() == CommandMessage.CommandCase.MOVECOMMAND) {
-                    MoveCommand moveCommand = commandMessage.getMoveCommand();
-
-                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
-                            moveCommand.getSpeed()
-                            + " direction: " +
-                            moveCommand.getDirection()
-                    );
-                }
+                Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
+                        moveCommand.getSpeed()
+                        + " direction: " +
+                        moveCommand.getDirection()
+                );
                 break;
-            case CONFIG:
-                ConfigMessage configMessage = message.getConfig();
+            case IOCONFIG:
+                IoConfig ioConfig = message.getIoConfig();
 
-                if (configMessage.getConfigCase() == ConfigMessage.ConfigCase.IOCONFIG) {
-                    IoConfig ioConfig = configMessage.getIoConfig();
+                Log.d(TAG, getTimeString() + " - client received [" + channel + "] ip: " +
+                        ioConfig.getPublisherIp()
+                        + " port: " +
+                        ioConfig.getPublisherPort()
+                );
+                break;
+            case VISIONCONFIG:
+                VisionConfig visionConfig = message.getVisionConfig();
 
-                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] ip: " +
-                            ioConfig.getPublisherIp()
-                            + " port: " +
-                            ioConfig.getPublisherPort()
-                    );
-                } else if (configMessage.getConfigCase() == ConfigMessage.ConfigCase.VISIONCONFIG) {
-                    VisionConfig visionConfig = configMessage.getVisionConfig();
-
-                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] camera enabled: " +
-                            visionConfig.getCameraEnabled()
-                    );
-                }
+                Log.d(TAG, getTimeString() + " - client received [" + channel + "] camera enabled: " +
+                        visionConfig.getCameraEnabled()
+                );
                 break;
             case STATS:
                 Stats stats = message.getStats();
@@ -224,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
             case DATA_NOT_SET:
             default:
                 Log.d(TAG, "Data not set");
+                break;
         }
 
     }
