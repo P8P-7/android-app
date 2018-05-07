@@ -111,7 +111,7 @@ public class ZMQPublishService extends Service {
             while (!isInterrupted()) {
                 try {
                     Message message = messages.take();
-                    zSocket.sendMore(String.valueOf(message.getDataCase().getNumber()));
+                    zSocket.sendMore("commands");
                     zSocket.send(message.toByteArray(), 0);
                     Log.v(TAG, "Publisher send: " + message.toString());
                 } catch (InterruptedException ignored) {

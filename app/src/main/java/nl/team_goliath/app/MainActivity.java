@@ -22,10 +22,8 @@ import java.util.Locale;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 import nl.team_goliath.app.interfaces.IMessageListener;
-import nl.team_goliath.app.protos.IoConfigProtos.IoConfig;
 import nl.team_goliath.app.protos.MessageProtos.Message;
 import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
-import nl.team_goliath.app.protos.StatsProtos.Stats;
 import nl.team_goliath.app.protos.VisionConfigProtos.VisionConfig;
 import nl.team_goliath.app.services.ZMQPublishService;
 import nl.team_goliath.app.services.ZMQSubscribeService;
@@ -185,27 +183,11 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
                         moveCommand.getDirection()
                 );
                 break;
-            case IOCONFIG:
-                IoConfig ioConfig = message.getIoConfig();
-
-                Log.d(TAG, getTimeString() + " - client received [" + channel + "] ip: " +
-                        ioConfig.getPublisherIp()
-                        + " port: " +
-                        ioConfig.getPublisherPort()
-                );
-                break;
             case VISIONCONFIG:
                 VisionConfig visionConfig = message.getVisionConfig();
 
                 Log.d(TAG, getTimeString() + " - client received [" + channel + "] camera enabled: " +
                         visionConfig.getCameraEnabled()
-                );
-                break;
-            case STATS:
-                Stats stats = message.getStats();
-
-                Log.d(TAG, getTimeString() + " - client received [" + channel + "] total cpu usage: " +
-                        stats.getCpuUsage().getTotalUsage()
                 );
                 break;
             case DATA_NOT_SET:
@@ -234,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
     public void onPause() {
         super.onPause();
         if (subscribeBinder != null) {
-            subscribeBinder.unsubscribe(Message.DataCase.STATS);
+            subscribeBinder.unsubscribe(Message.DataCase.MOVECOMMAND);
             subscribeBinder.disconnect();
         }
         if (publishBinder != null) {
