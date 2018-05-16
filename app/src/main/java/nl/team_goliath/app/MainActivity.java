@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,9 +24,11 @@ import java.util.Locale;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 import nl.team_goliath.app.interfaces.IMessageListener;
-import nl.team_goliath.app.protos.MessageProtos.Message;
+import nl.team_goliath.app.protos.SynchronizeMessageProtos.SynchronizeMessage;
+import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
+import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
 import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
-import nl.team_goliath.app.protos.VisionConfigProtos.VisionConfig;
+import nl.team_goliath.app.protos.BatteryRepositoryProtos.BatteryRepository;
 import nl.team_goliath.app.services.ZMQPublishService;
 import nl.team_goliath.app.services.ZMQSubscribeService;
 
@@ -58,9 +62,7 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
             subscribeBinder = (ZMQSubscribeService.SubscribeBinder) service;
             if (subscribeBinder != null) {
                 subscribeBinder.connect(SUB_ADDRESS);
-
-                // TODO Let users define on which channel they want to subscribe.
-                subscribeBinder.subscribe(Message.DataCase.MOVECOMMAND, MainActivity.this);
+                subscribeBinder.subscribe(MessageCarrier.MessageCase.SYNCHRONIZEMESSAGE, MainActivity.this);
                 subscribeBound = true;
             }
         }
@@ -160,8 +162,13 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
                 .setSpeed(speed)
                 .build();
 
-        Message message = Message.newBuilder()
+
+        CommandMessage commandMessage = CommandMessage.newBuilder()
                 .setMoveCommand(move)
+                .build();
+
+        MessageCarrier message = MessageCarrier.newBuilder()
+                .setCommandMessage(commandMessage)
                 .build();
 
         publishBinder.send(message);
@@ -172,25 +179,37 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
     }
 
     @Override
-    public void onMessageReceived(String channel, Message message) {
-        switch (message.getDataCase()) {
-            case MOVECOMMAND:
-                MoveCommand moveCommand = message.getMoveCommand();
+    public void onMessageReceived(String channel, MessageCarrier messageCarrier) {
+        switch (messageCarrier.getMessageCase()) {
+            case COMMANDMESSAGE:
+                CommandMessage commandMessage = messageCarrier.getCommandMessage();
 
-                Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
-                        moveCommand.getSpeed()
-                        + " direction: " +
-                        moveCommand.getDirection()
-                );
-                break;
-            case VISIONCONFIG:
-                VisionConfig visionConfig = message.getVisionConfig();
+                if (commandMessage.getCommandCase() == CommandMessage.CommandCase.MOVECOMMAND) {
+                    MoveCommand moveCommand = commandMessage.getMoveCommand();
 
-                Log.d(TAG, getTimeString() + " - client received [" + channel + "] camera enabled: " +
-                        visionConfig.getCameraEnabled()
-                );
+                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
+                            moveCommand.getSpeed()
+                            + " direction: " +
+                            moveCommand.getDirection());
+                }
                 break;
-            case DATA_NOT_SET:
+            case SYNCHRONIZEMESSAGE:
+                SynchronizeMessage synchronizeMessage = messageCarrier.getSynchronizeMessage();
+
+                for (com.google.protobuf.Any message : synchronizeMessage.getMessagesList()) {
+                    if (message.is(BatteryRepository.class)) {
+                        try {
+                            BatteryRepository batteryRepository = message.unpack(BatteryRepository.class);
+
+                            Log.d(TAG, getTimeString() + " - client received [" + channel + "] battery level: " +
+                                    batteryRepository.getLevel());
+                        } catch (InvalidProtocolBufferException ignored) {
+                        }
+
+                    }
+                }
+                break;
+            case MESSAGE_NOT_SET:
             default:
                 Log.d(TAG, "Data not set");
                 break;
@@ -216,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
     public void onPause() {
         super.onPause();
         if (subscribeBinder != null) {
-            subscribeBinder.unsubscribe(Message.DataCase.MOVECOMMAND);
+            subscribeBinder.unsubscribe(MessageCarrier.MessageCase.SYNCHRONIZEMESSAGE);
             subscribeBinder.disconnect();
         }
         if (publishBinder != null) {

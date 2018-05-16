@@ -13,7 +13,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import nl.team_goliath.app.interfaces.IPublisher;
-import nl.team_goliath.app.protos.MessageProtos.Message;
+import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
 
 public class ZMQPublishService extends Service {
     private static final String TAG = ZMQPublishService.class.getName();
@@ -54,9 +54,9 @@ public class ZMQPublishService extends Service {
         }
 
         @Override
-        public void send(Message message) {
+        public void send(MessageCarrier messageCarrier) {
             if (publisherThread != null) {
-                publisherThread.send(message);
+                publisherThread.send(messageCarrier);
             }
         }
 
@@ -72,7 +72,7 @@ public class ZMQPublishService extends Service {
     private class PublisherThread extends Thread {
         private String address;
 
-        private BlockingQueue<Message> messages = new ArrayBlockingQueue<>(1024);
+        private BlockingQueue<MessageCarrier> messages = new ArrayBlockingQueue<>(1024);
 
         private ZMQ.Context zContext;
         private ZMQ.Socket zSocket;
@@ -81,8 +81,8 @@ public class ZMQPublishService extends Service {
             this.address = address;
         }
 
-        public void send(Message message) {
-            messages.add(message);
+        public void send(MessageCarrier messageCarrier) {
+            messages.add(messageCarrier);
         }
 
         @Override
@@ -110,8 +110,8 @@ public class ZMQPublishService extends Service {
         private void push() {
             while (!isInterrupted()) {
                 try {
-                    Message message = messages.take();
-                    zSocket.sendMore("commands");
+                    MessageCarrier message = messages.take();
+                    zSocket.sendMore("" + message.getMessageCase().getNumber());
                     zSocket.send(message.toByteArray(), 0);
                     Log.v(TAG, "Publisher send: " + message.toString());
                 } catch (InterruptedException ignored) {

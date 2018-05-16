@@ -18,7 +18,7 @@ import java.util.Map;
 
 import nl.team_goliath.app.interfaces.IMessageListener;
 import nl.team_goliath.app.interfaces.ISubscriber;
-import nl.team_goliath.app.protos.MessageProtos.Message;
+import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
 
 public class ZMQSubscribeService extends Service {
     private static final String TAG = ZMQSubscribeService.class.getName();
@@ -61,14 +61,14 @@ public class ZMQSubscribeService extends Service {
         }
 
         @Override
-        public void subscribe(Message.DataCase key, IMessageListener listener) {
+        public void subscribe(MessageCarrier.MessageCase key, IMessageListener listener) {
             if (subscriberThread != null) {
                 subscriberThread.subscribe(key, listener);
             }
         }
 
         @Override
-        public void unsubscribe(Message.DataCase key) {
+        public void unsubscribe(MessageCarrier.MessageCase key) {
             if (subscriberThread != null) {
                 subscriberThread.unsubscribe(key);
             }
@@ -86,7 +86,7 @@ public class ZMQSubscribeService extends Service {
     private class SubscriberThread extends Thread {
         private String address;
 
-        private Map<Message.DataCase, IMessageListener> listeners = new HashMap<>();
+        private Map<MessageCarrier.MessageCase, IMessageListener> listeners = new HashMap<>();
         private ZMQ.Context zContext;
         private ZMQ.Socket zSocket;
 
@@ -94,11 +94,11 @@ public class ZMQSubscribeService extends Service {
             this.address = address;
         }
 
-        void subscribe(@NonNull Message.DataCase key, @NonNull IMessageListener listener) {
+        void subscribe(@NonNull MessageCarrier.MessageCase key, @NonNull IMessageListener listener) {
             listeners.put(key, listener);
         }
 
-        void unsubscribe(@NonNull Message.DataCase key) {
+        void unsubscribe(@NonNull MessageCarrier.MessageCase key) {
             listeners.remove(key);
         }
 
@@ -139,10 +139,10 @@ public class ZMQSubscribeService extends Service {
                         String channel = zSocket.recvStr(0);
                         byte[] received = zSocket.recv(0);
 
-                        Message message = Message.parseFrom(received);
+                        MessageCarrier message = MessageCarrier.parseFrom(received);
                         IMessageListener subscriber;
 
-                        if (message != null && (subscriber = listeners.get(message.getDataCase())) != null) {
+                        if (message != null && (subscriber = listeners.get(message.getMessageCase())) != null) {
                             handler.post(() -> subscriber.onMessageReceived(channel, message));
                         }
                     }
@@ -159,7 +159,7 @@ public class ZMQSubscribeService extends Service {
         }
 
         private void broadcastError(final String message) {
-            for (Map.Entry<Message.DataCase, IMessageListener> entry : listeners.entrySet()) {
+            for (Map.Entry<MessageCarrier.MessageCase, IMessageListener> entry : listeners.entrySet()) {
                 handler.post(() -> {
                     IMessageListener subscriber = entry.getValue();
                     if (subscriber != null) {
