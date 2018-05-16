@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 import nl.team_goliath.app.interfaces.IMessageListener;
+import nl.team_goliath.app.protos.MoveCommandProtos.MotorCommand;
 import nl.team_goliath.app.protos.SynchronizeMessageProtos.SynchronizeMessage;
 import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
 import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
@@ -157,11 +158,15 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
     private void sendMoveCommand(int direction, int speed) {
         if (!publishBound) return;
 
-        MoveCommand move = MoveCommand.newBuilder()
-                .setDirection(direction)
+        MotorCommand motorCommand = MotorCommand.newBuilder()
                 .setSpeed(speed)
+                .setGear(MotorCommand.gears.FORWARD)
+                .setMotor(MotorCommand.motors.LEFT_FRONT)
                 .build();
 
+        MoveCommand move = MoveCommand.newBuilder()
+                .addCommands(motorCommand)
+                .build();
 
         CommandMessage commandMessage = CommandMessage.newBuilder()
                 .setMoveCommand(move)
@@ -187,10 +192,14 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
                 if (commandMessage.getCommandCase() == CommandMessage.CommandCase.MOVECOMMAND) {
                     MoveCommand moveCommand = commandMessage.getMoveCommand();
 
-                    Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
-                            moveCommand.getSpeed()
-                            + " direction: " +
-                            moveCommand.getDirection());
+                    for (MotorCommand motorCommand : moveCommand.getCommandsList()) {
+                        Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
+                                motorCommand.getSpeed()
+                                + " gear: " +
+                                motorCommand.getGear()
+                                + " motor: " +
+                                motorCommand.getMotor());
+                    }
                 }
                 break;
             case SYNCHRONIZEMESSAGE:
