@@ -24,6 +24,8 @@ import java.util.Locale;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 import nl.team_goliath.app.interfaces.IMessageListener;
+import nl.team_goliath.app.protos.MoveWingCommandProtos.MoveWingCommand;
+import nl.team_goliath.app.protos.MoveWingCommandProtos.ServoCommand;
 import nl.team_goliath.app.protos.MoveCommandProtos.MotorCommand;
 import nl.team_goliath.app.protos.SynchronizeMessageProtos.SynchronizeMessage;
 import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
@@ -158,18 +160,18 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
     private void sendMoveCommand(int direction, int speed) {
         if (!publishBound) return;
 
-        MotorCommand motorCommand = MotorCommand.newBuilder()
+        ServoCommand servoCommand = ServoCommand.newBuilder()
                 .setSpeed(speed)
-                .setGear(MotorCommand.gears.FORWARD)
-                .setMotor(MotorCommand.motors.LEFT_FRONT)
+                .setDirection(ServoCommand.Direction.DOWN)
+                .setMotor(ServoCommand.Motor.LEFT_FRONT)
                 .build();
 
-        MoveCommand move = MoveCommand.newBuilder()
-                .addCommands(motorCommand)
+        MoveWingCommand move = MoveWingCommand.newBuilder()
+                .addCommands(servoCommand)
                 .build();
 
         CommandMessage commandMessage = CommandMessage.newBuilder()
-                .setMoveCommand(move)
+                .setMoveWingCommand(move)
                 .build();
 
         MessageCarrier message = MessageCarrier.newBuilder()
