@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.zeromq.ZMQ;
@@ -12,6 +11,7 @@ import org.zeromq.ZMQ;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import androidx.annotation.Nullable;
 import nl.team_goliath.app.interfaces.IPublisher;
 import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
 

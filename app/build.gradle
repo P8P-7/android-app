@@ -1,6 +1,8 @@
 buildscript {
     repositories {
+        google()
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.5'
@@ -11,14 +13,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 'android-P'
     defaultConfig {
         applicationId "nl.team_goliath.app"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -36,20 +38,30 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    def lifecycle_version = "2.0.0-alpha1"
+
+    // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+
+    def support_version = "1.0.0-alpha1"
 
     /* Android Support Libs */
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:support-vector-drawable:27.1.1'
+    implementation "androidx.appcompat:appcompat:$support_version"
+    implementation "com.google.android.material:material:$support_version"
+    implementation "androidx.vectordrawable:vectordrawable:$support_version"
+    implementation "androidx.preference:preference:$support_version"
+
+    /* Constraint layout */
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.0'
 
     /* Joystick */
     implementation 'io.github.controlwear:virtualjoystick:1.8.0'
@@ -62,8 +74,8 @@ dependencies {
 
     /* Testing */
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha2'
 }
 
 protobuf {
@@ -73,7 +85,7 @@ protobuf {
     generateProtoTasks {
         all().each { task ->
             task.builtins {
-                java { }
+                java {}
             }
         }
     }

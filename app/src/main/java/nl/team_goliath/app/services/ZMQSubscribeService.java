@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -16,6 +14,8 @@ import org.zeromq.ZMQ;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import nl.team_goliath.app.interfaces.IMessageListener;
 import nl.team_goliath.app.interfaces.ISubscriber;
 import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
