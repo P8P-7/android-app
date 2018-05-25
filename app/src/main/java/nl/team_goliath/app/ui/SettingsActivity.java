@@ -1,4 +1,4 @@
-package nl.team_goliath.app;
+package nl.team_goliath.app.ui;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
+import nl.team_goliath.app.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

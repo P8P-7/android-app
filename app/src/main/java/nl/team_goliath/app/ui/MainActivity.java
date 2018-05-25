@@ -1,4 +1,4 @@
-package nl.team_goliath.app;
+package nl.team_goliath.app.ui;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,6 +23,7 @@ import java.util.Locale;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import io.github.controlwear.virtual.joystick.android.JoystickView;
+import nl.team_goliath.app.R;
 import nl.team_goliath.app.interfaces.IMessageListener;
 import nl.team_goliath.app.protos.BatteryRepositoryProtos.BatteryRepository;
 import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;

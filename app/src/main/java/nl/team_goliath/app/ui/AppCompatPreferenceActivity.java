@@ -1,4 +1,4 @@
-package nl.team_goliath.app;
+package nl.team_goliath.app.ui;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
