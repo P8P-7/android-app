@@ -8,7 +8,7 @@
         android:icon="@drawable/ic_poll_black_24dp"
         android:title="@string/menu_statistics" />
     <item
-        android:id="@+id/action_navigation"
+        android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/menu_settings" />
 </menu>

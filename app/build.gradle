@@ -37,6 +37,9 @@ android {
             }
         }
     }
+    dataBinding {
+        enabled = true
+    }
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -64,7 +67,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.0'
 
     /* Joystick */
-    implementation 'io.github.controlwear:virtualjoystick:1.8.0'
+    implementation 'io.github.controlwear:virtualjoystick:1.9.2'
+
+    /* Logging */
+    implementation 'com.jakewharton.timber:timber:4.7.0'
 
     /* Protocol Buffers */
     implementation 'com.google.protobuf:protobuf-java:3.5.1'

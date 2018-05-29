@@ -8,36 +8,41 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import io.github.controlwear.virtual.joystick.android.JoystickView;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
+import nl.team_goliath.app.GoliathApp;
 import nl.team_goliath.app.R;
-import nl.team_goliath.app.interfaces.IMessageListener;
+import nl.team_goliath.app.manager.EventDispatcher;
+import nl.team_goliath.app.model.CommandSender;
+import nl.team_goliath.app.model.MessageListener;
 import nl.team_goliath.app.protos.BatteryRepositoryProtos.BatteryRepository;
 import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
 import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
-import nl.team_goliath.app.protos.MoveCommandProtos.MotorCommand;
-import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
-import nl.team_goliath.app.protos.MoveWingCommandProtos.MoveWingCommand;
-import nl.team_goliath.app.protos.MoveWingCommandProtos.ServoCommand;
-import nl.team_goliath.app.protos.SynchronizeMessageProtos.SynchronizeMessage;
-import nl.team_goliath.app.services.ZMQPublishService;
-import nl.team_goliath.app.services.ZMQSubscribeService;
+import nl.team_goliath.app.protos.SynchronizeMessageProtos;
+import nl.team_goliath.app.protos.ZmqConfigRepositoryProtos.ConfigRepository;
+import nl.team_goliath.app.service.ZMQPublishService;
+import nl.team_goliath.app.service.ZMQSubscribeService;
+import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements IMessageListener {
+public class MainActivity extends AppCompatActivity implements MessageListener, CommandSender, PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private static final List<Class<? extends Message>> knownRepositories = Arrays.asList(BatteryRepository.class, ConfigRepository.class);
 
     /**
      * TCP Addresses
@@ -95,45 +100,28 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
         }
     };
 
-    private TextView textViewAngleLeft;
-    private TextView textViewStrengthLeft;
-
-    private TextView textViewAngleRight;
-    private TextView textViewStrengthRight;
-    private TextView textViewCoordinateRight;
-
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ", Locale.US);
+
+    private EventDispatcher dispatcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        dispatcher = GoliathApp.getEventDispatcher();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        BottomNavigationView bottomNav = findViewById(R.id.navigation);
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            selectFragment(item.getItemId());
+
+            return true;
+        });
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        textViewAngleLeft = findViewById(R.id.textView_angle_left);
-        textViewStrengthLeft = findViewById(R.id.textView_strength_left);
-
-        JoystickView joystickLeft = findViewById(R.id.joystickView_left);
-        joystickLeft.setOnMoveListener((angle, strength) -> {
-            textViewAngleLeft.setText(getString(R.string.angle, angle));
-            textViewStrengthLeft.setText(getString(R.string.strength, strength));
-            sendMoveCommand(angle, strength);
-        }, 500);
-
-        textViewAngleRight = findViewById(R.id.textView_angle_right);
-        textViewStrengthRight = findViewById(R.id.textView_strength_right);
-        textViewCoordinateRight = findViewById(R.id.textView_coordinate_right);
-
-        final JoystickView joystickRight = findViewById(R.id.joystickView_right);
-        joystickRight.setOnMoveListener((angle, strength) -> {
-            textViewAngleRight.setText(getString(R.string.angle, angle));
-            textViewStrengthRight.setText(getString(R.string.strength, strength));
-            textViewCoordinateRight.setText(getString(R.string.coordinate, joystickRight.getNormalizedX(), joystickRight.getNormalizedY()));
-            sendMoveCommand(angle, strength);
-        }, 500);
 
         SUB_ADDRESS = prefs.getString("sub_address", getString(R.string.pref_default_sub_address));
         PUB_ADDRESS = prefs.getString("pub_address", getString(R.string.pref_default_pub_address));
@@ -156,21 +144,17 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
         };
 
         prefs.registerOnSharedPreferenceChangeListener(listener);
+
+        if (savedInstanceState == null) {
+            // Create the fragment only when the activity is created for the first time.
+            // ie. not after orientation changes
+            selectFragment(R.id.action_control);
+        }
     }
 
-    private void sendMoveCommand(int direction, int speed) {
+    @Override
+    public void sendCommand(CommandMessage commandMessage) {
         if (!publishBound) return;
-
-        MoveWingCommand move = MoveWingCommand.newBuilder()
-                .addCommands(ServoCommand.newBuilder()
-                        .setSpeed((int) Math.round(speed * 10.23))
-                        .setDirection(direction < 180 ? ServoCommand.Direction.DOWN : ServoCommand.Direction.UP)
-                        .setMotor(ServoCommand.Motor.LEFT_BACK))
-                .build();
-
-        CommandMessage commandMessage = CommandMessage.newBuilder()
-                .setMoveWingCommand(move)
-                .build();
 
         MessageCarrier message = MessageCarrier.newBuilder()
                 .setCommandMessage(commandMessage)
@@ -184,51 +168,36 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
     }
 
     @Override
-    public void onMessageReceived(String channel, MessageCarrier messageCarrier) {
-        switch (messageCarrier.getMessageCase()) {
-            case COMMANDMESSAGE:
-                CommandMessage commandMessage = messageCarrier.getCommandMessage();
-
-                if (commandMessage.getCommandCase() == CommandMessage.CommandCase.MOVECOMMAND) {
-                    MoveCommand moveCommand = commandMessage.getMoveCommand();
-
-                    for (MotorCommand motorCommand : moveCommand.getCommandsList()) {
-                        Log.d(TAG, getTimeString() + " - client received [" + channel + "] speed: " +
-                                motorCommand.getSpeed()
-                                + " gear: " +
-                                motorCommand.getGear()
-                                + " motor: " +
-                                motorCommand.getMotor());
-                    }
-                }
-                break;
-            case SYNCHRONIZEMESSAGE:
-                SynchronizeMessage synchronizeMessage = messageCarrier.getSynchronizeMessage();
-
-                for (com.google.protobuf.Any message : synchronizeMessage.getMessagesList()) {
-                    if (message.is(BatteryRepository.class)) {
-                        try {
-                            BatteryRepository batteryRepository = message.unpack(BatteryRepository.class);
-
-                            Log.d(TAG, getTimeString() + " - client received [" + channel + "] battery level: " +
-                                    batteryRepository.getLevel());
-                        } catch (InvalidProtocolBufferException ignored) {
-                        }
-
-                    }
-                }
-                break;
-            case MESSAGE_NOT_SET:
-            default:
-                Log.d(TAG, "Data not set");
-                break;
+    public void onMessageReceived(Message message) {
+        MessageCarrier messageCarrier = (MessageCarrier) message;
+        if (messageCarrier.getMessageCase() != MessageCarrier.MessageCase.SYNCHRONIZEMESSAGE) {
+            throw new RuntimeException("The app can only be subscribed to synchronize messages");
         }
 
+        SynchronizeMessageProtos.SynchronizeMessage synchronizeMessage = messageCarrier.getSynchronizeMessage();
+
+        for (com.google.protobuf.Any anyMessage : synchronizeMessage.getMessagesList()) {
+            dispatchMessage(anyMessage);
+        }
+    }
+
+    public void dispatchMessage(com.google.protobuf.Any anyMessage) {
+        for (Class<? extends Message> knownRepository : knownRepositories) {
+            MessageListener handler;
+            if (anyMessage.is(knownRepository) && (handler = dispatcher.getHandlerForClassType(knownRepository)) != null) {
+                try {
+                    Message repository = anyMessage.unpack(knownRepository);
+                    handler.onMessageReceived(repository);
+                } catch (InvalidProtocolBufferException e) {
+                    handler.onError(e.getMessage());
+                }
+            }
+        }
     }
 
     @Override
     public void onError(String message) {
-        Log.e(TAG, getTimeString() + " - client error: " + message);
+        Timber.e(TAG, "%s - client error:  %s", getTimeString(), message);
     }
 
     @Override
@@ -255,26 +224,50 @@ public class MainActivity extends AppCompatActivity implements IMessageListener 
         unbindService(publishServiceConnection);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    private void selectFragment(int id) {
+        Fragment frag = null;
+
+        // Init corresponding fragment
+        switch (id) {
+            case R.id.action_control:
+                frag = ControlFragment.newInstance();
+                break;
+            case R.id.action_statistics:
+                frag = StatisticsFragment.newInstance();
+                break;
+            case R.id.action_settings:
+                frag = PreferenceFragment.newInstance();
+                break;
+        }
+
+        if (frag != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, frag)
+                    .commitNow();
+
+            if (id == R.id.action_statistics) {
+                // Just for testing..
+                /*Random r = new Random();
+                Message batteryMessage = MessageCarrier.newBuilder().setSynchronizeMessage(
+                        SynchronizeMessageProtos.SynchronizeMessage.newBuilder().
+                                addMessages(Any.pack(BatteryRepository.newBuilder().setLevel(r.nextInt(100) + 1).build()))).build();
+                onMessageReceived(batteryMessage);*/
+            }
+        }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public boolean onPreferenceStartScreen(PreferenceFragmentCompat preferenceFragmentCompat, PreferenceScreen preferenceScreen) {
+        Bundle args = new Bundle();
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, preferenceScreen.getKey());
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-            return true;
-        }
+        PreferenceFragment fragment = PreferenceFragment.newInstance();
+        fragment.setArguments(args);
 
-        return super.onOptionsItemSelected(item);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.container, fragment, preferenceScreen.getKey())
+                .addToBackStack(preferenceScreen.getKey())
+                .commit();
+        return true;
     }
 }

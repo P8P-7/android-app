@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".GoliathApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,16 +22,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.SettingsActivity"
-            android:label="@string/title_activity_settings" />
 
         <service
-            android:name=".services.ZMQSubscribeService"
+            android:name=".service.ZMQSubscribeService"
             android:exported="false" />
 
         <service
-            android:name=".services.ZMQPublishService"
+            android:name=".service.ZMQPublishService"
             android:exported="false" />
     </application>
 
