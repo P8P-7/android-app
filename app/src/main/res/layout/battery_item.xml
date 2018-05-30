@@ -33,6 +33,7 @@
                 layout="@layout/loading_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 app:resource="@{resource}" />
 
             <LinearLayout

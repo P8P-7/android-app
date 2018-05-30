@@ -14,6 +14,8 @@ import io.github.controlwear.virtual.joystick.android.JoystickView;
 import nl.team_goliath.app.R;
 import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
+import nl.team_goliath.app.protos.MoveCommandProtos.MotorCommand;
+import nl.team_goliath.app.protos.MoveCommandProtos.MoveCommand;
 import nl.team_goliath.app.protos.MoveWingCommandProtos.MoveWingCommand;
 import nl.team_goliath.app.protos.MoveWingCommandProtos.ServoCommand;
 
@@ -69,21 +71,24 @@ public class ControlFragment extends Fragment {
         }, 500);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     private CommandMessage buildMoveWingCommand(int angle, int strength) {
-        MoveWingCommand move = MoveWingCommand.newBuilder()
+        MoveWingCommand moveWingCommand = MoveWingCommand.newBuilder()
                 .addCommands(ServoCommand.newBuilder()
                         .setSpeed((int) Math.round(strength * 10.23))
                         .setDirection(angle < 180 ? ServoCommand.Direction.UP : ServoCommand.Direction.DOWN)
                         .setMotor(ServoCommand.Motor.LEFT_BACK))
                 .build();
 
+        MoveCommand moveCommand = MoveCommand.newBuilder()
+                .addCommands(MotorCommand.newBuilder()
+                        .setSpeed((int) Math.round(strength * 2.55))
+                        .setGear(angle < 180 ? MotorCommand.Gear.FORWARD : MotorCommand.Gear.BACKWARD)
+                        .setMotor(MotorCommand.Motor.LEFT_BACK))
+                .build();
+
         return CommandMessage.newBuilder()
-                .setMoveWingCommand(move)
+                //.setMoveWingCommand(moveWingCommand)
+                .setMoveCommand(moveCommand)
                 .build();
     }
 }

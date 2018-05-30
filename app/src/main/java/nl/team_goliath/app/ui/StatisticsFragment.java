@@ -20,7 +20,7 @@ public class StatisticsFragment extends Fragment {
 
     private StatisticsFragmentBinding binding;
 
-    public static StatisticsFragment newInstance() {
+    static StatisticsFragment newInstance() {
         return new StatisticsFragment();
     }
 

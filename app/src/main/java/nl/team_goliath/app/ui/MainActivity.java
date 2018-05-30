@@ -244,15 +244,6 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, frag)
                     .commitNow();
-
-            if (id == R.id.action_statistics) {
-                // Just for testing..
-                /*Random r = new Random();
-                Message batteryMessage = MessageCarrier.newBuilder().setSynchronizeMessage(
-                        SynchronizeMessageProtos.SynchronizeMessage.newBuilder().
-                                addMessages(Any.pack(BatteryRepository.newBuilder().setLevel(r.nextInt(100) + 1).build()))).build();
-                onMessageReceived(batteryMessage);*/
-            }
         }
     }
 
