@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/control"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:context=".ui.ControlFragment">
 
     <TextView
         android:id="@+id/textView_angle_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
         android:text="@string/angle_default" />
 
     <TextView
         android:id="@+id/textView_strength_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingStart="16dp"
         android:text="@string/strength_default"
         app:layout_constraintTop_toBottomOf="@+id/textView_angle_left" />
 
@@ -26,6 +27,8 @@
         android:id="@+id/textView_angle_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
         android:text="@string/angle_default"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -33,45 +36,39 @@
         android:id="@+id/textView_strength_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingEnd="16dp"
         android:text="@string/strength_default"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_angle_right" />
-
-    <TextView
-        android:id="@+id/textView_coordinate_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/coordinate_default"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_strength_right" />
 
     <io.github.controlwear.virtual.joystick.android.JoystickView
         android:id="@+id/joystickView_left"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
-        app:JV_backgroundColor="#3F51B5"
-        app:JV_borderColor="#303F9F"
+        android:layout_marginBottom="@dimen/default_margin"
+        app:JV_backgroundColor="@color/joystickBackgroundColor"
+        app:JV_borderColor="@color/joystickBorderColor"
         app:JV_borderWidth="8dp"
-        app:JV_buttonColor="#FF5722"
-        app:JV_fixedCenter="false"
+        app:JV_buttonColor="@color/joystickButtonColor"
+        app:JV_buttonDirection="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintWidth_percent="0.4" />
+        app:layout_constraintWidth_percent="0.35" />
 
     <io.github.controlwear.virtual.joystick.android.JoystickView
         android:id="@+id/joystickView_right"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
-        app:JV_backgroundColor="#009688"
-        app:JV_borderColor="#00796B"
+        android:layout_marginBottom="@dimen/default_margin"
+        app:JV_backgroundColor="@color/joystickBackgroundColor"
+        app:JV_borderColor="@color/joystickBorderColor"
         app:JV_borderWidth="8dp"
-        app:JV_buttonColor="#FF5722"
+        app:JV_buttonColor="@color/joystickButtonColor"
+        app:JV_buttonDirection="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintWidth_percent="0.3" />
+        app:layout_constraintWidth_percent="0.35" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

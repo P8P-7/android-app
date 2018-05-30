@@ -1,23 +1,21 @@
-package nl.team_goliath.app.services;
+package nl.team_goliath.app.service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import org.zeromq.ZMQ;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import nl.team_goliath.app.interfaces.IPublisher;
+import androidx.annotation.Nullable;
+import nl.team_goliath.app.model.Publisher;
 import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
+import timber.log.Timber;
 
 public class ZMQPublishService extends Service {
-    private static final String TAG = ZMQPublishService.class.getName();
-
     private PublishBinder publishBinder;
 
     @Override
@@ -41,7 +39,7 @@ public class ZMQPublishService extends Service {
         }
     }
 
-    public class PublishBinder extends Binder implements IPublisher {
+    public class PublishBinder extends Binder implements Publisher {
 
         private PublisherThread publisherThread;
 
@@ -99,9 +97,9 @@ public class ZMQPublishService extends Service {
 
             boolean result = zSocket.connect(address);
             if (result) {
-                Log.d(TAG, address + " connected");
+                Timber.d("%s connected", address);
             } else {
-                Log.d(TAG, "Failed to connect");
+                Timber.d("Failed to connect");
             }
 
             return result;
@@ -113,7 +111,7 @@ public class ZMQPublishService extends Service {
                     MessageCarrier message = messages.take();
                     zSocket.sendMore("" + message.getMessageCase().getNumber());
                     zSocket.send(message.toByteArray(), 0);
-                    Log.v(TAG, "Publisher send: " + message.toString());
+                    Timber.v("Publisher send: %s", message.toString());
                 } catch (InterruptedException ignored) {
                 }
             }
@@ -124,7 +122,7 @@ public class ZMQPublishService extends Service {
                 zSocket.disconnect(address);
                 zSocket = null;
             }
-            Log.i(TAG, "push: " + address + " disconnected");
+            Timber.i("push: %s disconnected", address);
         }
     }
 }

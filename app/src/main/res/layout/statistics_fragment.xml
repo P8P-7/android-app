@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.StatisticsFragment">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="batteryRepo"
+            type="nl.team_goliath.app.protos.BatteryRepositoryProtos.BatteryRepository" />
+
+        <variable
+            name="batteryResource"
+            type="nl.team_goliath.app.model.Resource" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/battery_item"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:repository="@{batteryRepo}"
+            app:resource="@{batteryResource}" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">IDP 7</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Goliath</string>
 
     <string name="angle_default">0°</string>
     <string name="strength_default">0%</string>
@@ -8,15 +7,25 @@
 
     <string name="angle" formatted="false">%1$d°</string>
     <string name="strength" formatted="false">%1$d%%</string>
-    <string name="coordinate" formatted="false">%1$d:%2$d</string>
 
     <string name="hint_message">Please enter a message</string>
     <string name="command_not_set_error">Command not set!</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="menu_robot_control">Control</string>
+    <string name="menu_statistics">Statistics</string>
+    <string name="menu_settings">Settings</string>
+
+    <string name="loading_items">Loading…</string>
+    <string name="unknown_error">Unknown Error</string>
+
+    <string name="battery_level">Battery level: %d%%</string>
+
     <!-- Strings related to Settings -->
+    <string name="pref_header">Settings</string>
 
     <!-- General settings -->
+    <string name="pref_general_key">general_preference</string>
     <string name="pref_header_general">General</string>
 
     <string name="pref_title_sub_address">Subscriber address / port</string>

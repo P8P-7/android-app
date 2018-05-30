@@ -1,13 +1,10 @@
-package nl.team_goliath.app.services;
+package nl.team_goliath.app.service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -16,13 +13,14 @@ import org.zeromq.ZMQ;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.team_goliath.app.interfaces.IMessageListener;
-import nl.team_goliath.app.interfaces.ISubscriber;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import nl.team_goliath.app.model.MessageListener;
+import nl.team_goliath.app.model.Subscriber;
 import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
+import timber.log.Timber;
 
 public class ZMQSubscribeService extends Service {
-    private static final String TAG = ZMQSubscribeService.class.getName();
-
     private SubscribeBinder subscribeBinder;
     private Handler handler;
 
@@ -48,7 +46,7 @@ public class ZMQSubscribeService extends Service {
         }
     }
 
-    public class SubscribeBinder extends Binder implements ISubscriber {
+    public class SubscribeBinder extends Binder implements Subscriber {
 
         private SubscriberThread subscriberThread;
 
@@ -61,14 +59,14 @@ public class ZMQSubscribeService extends Service {
         }
 
         @Override
-        public void subscribe(MessageCarrier.MessageCase key, IMessageListener listener) {
+        public void subscribe(@NonNull MessageCarrier.MessageCase key, @NonNull MessageListener listener) {
             if (subscriberThread != null) {
                 subscriberThread.subscribe(key, listener);
             }
         }
 
         @Override
-        public void unsubscribe(MessageCarrier.MessageCase key) {
+        public void unsubscribe(@NonNull MessageCarrier.MessageCase key) {
             if (subscriberThread != null) {
                 subscriberThread.unsubscribe(key);
             }
@@ -86,7 +84,7 @@ public class ZMQSubscribeService extends Service {
     private class SubscriberThread extends Thread {
         private String address;
 
-        private Map<MessageCarrier.MessageCase, IMessageListener> listeners = new HashMap<>();
+        private Map<MessageCarrier.MessageCase, MessageListener> listeners = new HashMap<>();
         private ZMQ.Context zContext;
         private ZMQ.Socket zSocket;
 
@@ -94,7 +92,7 @@ public class ZMQSubscribeService extends Service {
             this.address = address;
         }
 
-        void subscribe(@NonNull MessageCarrier.MessageCase key, @NonNull IMessageListener listener) {
+        void subscribe(@NonNull MessageCarrier.MessageCase key, @NonNull MessageListener listener) {
             listeners.put(key, listener);
         }
 
@@ -108,7 +106,7 @@ public class ZMQSubscribeService extends Service {
                 try {
                     poll();
                 } catch (InvalidProtocolBufferException e) {
-                    Log.e(TAG, "poll: Failed to decode data", e);
+                    Timber.e(e, "poll: Failed to decode data");
                 }
                 disconnect();
             }
@@ -121,9 +119,9 @@ public class ZMQSubscribeService extends Service {
 
             boolean result = zSocket.connect(address);
             if (result) {
-                Log.d(TAG, address + " connected");
+                Timber.d("%s connected", address);
             } else {
-                broadcastError("Failed to connect");
+                broadcastConnectError();
             }
 
             return result;
@@ -140,10 +138,10 @@ public class ZMQSubscribeService extends Service {
                         byte[] received = zSocket.recv(0);
 
                         MessageCarrier message = MessageCarrier.parseFrom(received);
-                        IMessageListener subscriber;
+                        MessageListener subscriber;
 
                         if (message != null && (subscriber = listeners.get(message.getMessageCase())) != null) {
-                            handler.post(() -> subscriber.onMessageReceived(channel, message));
+                            handler.post(() -> subscriber.onMessageReceived(message));
                         }
                     }
                 }
@@ -155,15 +153,15 @@ public class ZMQSubscribeService extends Service {
                 zSocket.disconnect(address);
                 zSocket = null;
             }
-            Log.i(TAG, "poll: " + address + " disconnected");
+            Timber.i("poll: %s disconnected", address);
         }
 
-        private void broadcastError(final String message) {
-            for (Map.Entry<MessageCarrier.MessageCase, IMessageListener> entry : listeners.entrySet()) {
+        private void broadcastConnectError() {
+            for (Map.Entry<MessageCarrier.MessageCase, MessageListener> entry : listeners.entrySet()) {
                 handler.post(() -> {
-                    IMessageListener subscriber = entry.getValue();
+                    MessageListener subscriber = entry.getValue();
                     if (subscriber != null) {
-                        subscriber.onError(message);
+                        subscriber.onError("Failed to connect");
                     }
                 });
             }
