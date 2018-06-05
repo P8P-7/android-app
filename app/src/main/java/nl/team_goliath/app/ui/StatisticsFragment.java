@@ -20,8 +20,8 @@ import nl.team_goliath.app.formatter.LogRepositoryFormatter;
 import nl.team_goliath.app.proto.BatteryRepositoryProto.BatteryRepository;
 import nl.team_goliath.app.proto.LogRepositoryProto.LogRepository;
 import nl.team_goliath.app.proto.ZmqConfigRepositoryProto.ConfigRepository;
+import nl.team_goliath.app.util.AutoClearedValue;
 import nl.team_goliath.app.viewmodel.RepositoryViewModel;
-import util.AutoClearedValue;
 
 /**
  * Main UI for the statistics screen.
