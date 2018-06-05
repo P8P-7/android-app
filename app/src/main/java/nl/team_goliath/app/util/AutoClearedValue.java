@@ -1,4 +1,4 @@
-package util;
+package nl.team_goliath.app.util;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
