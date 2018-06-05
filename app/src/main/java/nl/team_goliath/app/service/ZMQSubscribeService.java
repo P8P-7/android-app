@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import nl.team_goliath.app.model.MessageListener;
 import nl.team_goliath.app.model.Subscriber;
-import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
+import nl.team_goliath.app.proto.MessageCarrierProto.MessageCarrier;
 import timber.log.Timber;
 
 public class ZMQSubscribeService extends Service {

@@ -10,14 +10,11 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,19 +27,14 @@ import nl.team_goliath.app.R;
 import nl.team_goliath.app.manager.EventDispatcher;
 import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.model.MessageListener;
-import nl.team_goliath.app.protos.BatteryRepositoryProtos.BatteryRepository;
-import nl.team_goliath.app.protos.CommandMessageProtos.CommandMessage;
-import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
-import nl.team_goliath.app.protos.SynchronizeMessageProtos;
-import nl.team_goliath.app.protos.ZmqConfigRepositoryProtos.ConfigRepository;
+import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
+import nl.team_goliath.app.proto.MessageCarrierProto.MessageCarrier;
 import nl.team_goliath.app.service.ZMQPublishService;
 import nl.team_goliath.app.service.ZMQSubscribeService;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements MessageListener, CommandSender, PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    private static final List<Class<? extends Message>> knownRepositories = Arrays.asList(BatteryRepository.class, ConfigRepository.class);
 
     /**
      * TCP Addresses
@@ -170,27 +162,21 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
     @Override
     public void onMessageReceived(Message message) {
         MessageCarrier messageCarrier = (MessageCarrier) message;
-        if (messageCarrier.getMessageCase() != MessageCarrier.MessageCase.SYNCHRONIZEMESSAGE) {
-            throw new RuntimeException("The app can only be subscribed to synchronize messages");
-        }
 
-        SynchronizeMessageProtos.SynchronizeMessage synchronizeMessage = messageCarrier.getSynchronizeMessage();
+        MessageCarrier.MessageCase messageCase = messageCarrier.getMessageCase();
 
-        for (com.google.protobuf.Any anyMessage : synchronizeMessage.getMessagesList()) {
-            dispatchMessage(anyMessage);
-        }
-    }
-
-    public void dispatchMessage(com.google.protobuf.Any anyMessage) {
-        for (Class<? extends Message> knownRepository : knownRepositories) {
-            MessageListener handler;
-            if (anyMessage.is(knownRepository) && (handler = dispatcher.getHandlerForClassType(knownRepository)) != null) {
-                try {
-                    Message repository = anyMessage.unpack(knownRepository);
-                    handler.onMessageReceived(repository);
-                } catch (InvalidProtocolBufferException e) {
-                    handler.onError(e.getMessage());
-                }
+        MessageListener handler;
+        if ((handler = dispatcher.getHandlerForMessageCase(messageCase)) != null) {
+            switch (messageCase) {
+                case COMMANDMESSAGE:
+                    handler.onMessageReceived(messageCarrier.getCommandMessage());
+                    break;
+                case EMOTIONMESSAGE:
+                    handler.onMessageReceived(messageCarrier.getEmotionMessage());
+                    break;
+                case SYNCHRONIZEMESSAGE:
+                    handler.onMessageReceived(messageCarrier.getSynchronizeMessage());
+                    break;
             }
         }
     }
@@ -231,6 +217,9 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
         switch (id) {
             case R.id.action_control:
                 frag = ControlFragment.newInstance();
+                break;
+            case R.id.action_presets:
+                frag = StatisticsFragment.newInstance();
                 break;
             case R.id.action_statistics:
                 frag = StatisticsFragment.newInstance();

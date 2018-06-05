@@ -7,27 +7,16 @@
     <data>
 
         <import type="android.view.View" />
-
-        <variable
-            name="batteryRepo"
-            type="nl.team_goliath.app.protos.BatteryRepositoryProtos.BatteryRepository" />
-
-        <variable
-            name="batteryResource"
-            type="nl.team_goliath.app.model.Resource" />
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/statistics_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <include
-            layout="@layout/battery_item"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:repository="@{batteryRepo}"
-            app:resource="@{batteryResource}" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/message_item" />
 </layout>

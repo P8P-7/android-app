@@ -6,22 +6,16 @@ import androidx.lifecycle.LiveData;
 import nl.team_goliath.app.manager.EventDispatcher;
 import nl.team_goliath.app.model.MessageListener;
 import nl.team_goliath.app.model.Resource;
+import nl.team_goliath.app.proto.MessageCarrierProto.MessageCarrier.MessageCase;
+import nl.team_goliath.app.proto.SynchronizeMessageProto.SynchronizeMessage;
 
-public abstract class SynchronizeLiveData<T extends Message> extends LiveData<Resource<T>> {
-    private final Class<T> typeParameterClass;
+public class SynchronizeMessageLiveData extends LiveData<Resource<SynchronizeMessage>> {
     private EventDispatcher dispatcher;
-
-    SynchronizeLiveData(EventDispatcher dispatcher, Class<T> typeParameterClass) {
-        this.dispatcher = dispatcher;
-        this.typeParameterClass = typeParameterClass;
-        setValue(Resource.loading(null));
-    }
 
     private MessageListener listener = new MessageListener() {
         @Override
         public void onMessageReceived(Message message) {
-            // noinspection unchecked
-            setValue(Resource.success((T) message));
+            setValue(Resource.success((SynchronizeMessage) message));
         }
 
         @Override
@@ -30,13 +24,18 @@ public abstract class SynchronizeLiveData<T extends Message> extends LiveData<Re
         }
     };
 
+    public SynchronizeMessageLiveData(EventDispatcher dispatcher) {
+        this.dispatcher = dispatcher;
+        setValue(Resource.loading(null));
+    }
+
     @Override
     protected void onActive() {
-        dispatcher.addHandler(typeParameterClass, listener);
+        dispatcher.addHandler(MessageCase.SYNCHRONIZEMESSAGE, listener);
     }
 
     @Override
     protected void onInactive() {
-        dispatcher.removeHandler(typeParameterClass);
+        dispatcher.removeHandler(MessageCase.SYNCHRONIZEMESSAGE);
     }
 }

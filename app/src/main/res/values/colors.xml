@@ -7,4 +7,14 @@
     <color name="joystickBackgroundColor">#FFFFFF</color>
     <color name="joystickButtonColor">@color/colorAccent</color>
     <color name="joystickBorderColor">#000000</color>
+
+    <color name="dateTimeColor">#2E7D32</color>
+    <color name="threadIdColor">#00838F</color>
+    <color name="traceColor">#8E24AA</color>
+    <color name="debugColor">#FFB300</color>
+    <color name="infoColor">#3F51B5</color>
+    <color name="warningColor">#E57373</color>
+    <color name="errorColor">#E53935</color>
+    <color name="fatalColor">#E53935</color>
+    <color name="defaultColor">#000000</color>
 </resources>

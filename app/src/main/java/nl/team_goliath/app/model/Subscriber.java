@@ -1,7 +1,7 @@
 package nl.team_goliath.app.model;
 
 import androidx.annotation.NonNull;
-import nl.team_goliath.app.protos.MessageCarrierProtos.MessageCarrier;
+import nl.team_goliath.app.proto.MessageCarrierProto.MessageCarrier;
 
 public interface Subscriber {
     void connect(String address);

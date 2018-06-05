@@ -4,8 +4,12 @@
         android:icon="@drawable/ic_adjust_black_24dp"
         android:title="@string/menu_robot_control" />
     <item
+        android:id="@+id/action_presets"
+        android:icon="@drawable/ic_tune_black_24dp"
+        android:title="@string/menu_robot_presets" />
+    <item
         android:id="@+id/action_statistics"
-        android:icon="@drawable/ic_poll_black_24dp"
+        android:icon="@drawable/ic_equalizer_black_24dp"
         android:title="@string/menu_statistics" />
     <item
         android:id="@+id/action_settings"
