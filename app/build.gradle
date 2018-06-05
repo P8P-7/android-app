@@ -48,36 +48,26 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
     def lifecycle_version = "2.0.0-alpha1"
-
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-
     def support_version = "1.0.0-alpha1"
-
     /* Android Support Libs */
     implementation "androidx.appcompat:appcompat:$support_version"
     implementation "com.google.android.material:material:$support_version"
     implementation "androidx.vectordrawable:vectordrawable:$support_version"
     implementation "androidx.preference:preference:$support_version"
-
     /* Constraint layout */
     implementation 'androidx.constraintlayout:constraintlayout:1.1.0'
-
     /* Joystick */
     implementation 'io.github.controlwear:virtualjoystick:1.9.2'
-
     /* Logging */
     implementation 'com.jakewharton.timber:timber:4.7.0'
-
     /* Protocol Buffers */
     implementation 'com.google.protobuf:protobuf-java:3.5.1'
-
     /* ZeroMQ Message Queue */
     implementation 'org.zeromq:jeromq:0.4.3'
-
     /* Testing */
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha2'

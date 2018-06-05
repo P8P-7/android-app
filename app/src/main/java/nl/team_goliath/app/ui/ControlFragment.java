@@ -20,6 +20,7 @@ import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
 import nl.team_goliath.app.proto.MoveCommandProto.MotorCommand;
 import nl.team_goliath.app.proto.MoveCommandProto.MoveCommand;
+import nl.team_goliath.app.proto.MoveWingCommandProto;
 
 /**
  * Main UI for the control screen.
@@ -115,6 +116,15 @@ public class ControlFragment extends Fragment {
 
         return CommandMessage.newBuilder()
                 .setMoveCommand(moveCommand)
+                .build();
+    }
+
+    private CommandMessage buildMoveWingCommand(int speed, MoveWingCommandProto.ServoCommand.Direction direction, MoveWingCommandProto.ServoCommand.Motor motor) {
+        MoveWingCommandProto.MoveWingCommand command = MoveWingCommandProto.MoveWingCommand.newBuilder()
+                .build();
+
+        return CommandMessage.newBuilder()
+                .setMoveWingCommand(command)
                 .build();
     }
 }
