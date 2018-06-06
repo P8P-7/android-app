@@ -7,16 +7,32 @@
     <data>
 
         <import type="android.view.View" />
+
+        <variable
+            name="resource"
+            type="nl.team_goliath.app.model.Resource" />
     </data>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/statistics_list"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/message_item" />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin">
+
+        <include
+            layout="@layout/loading_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            app:resource="@{resource}" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/statistics_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            app:visibleGone="@{resource.data != null}"
+            tools:listitem="@layout/message_item" />
+
+    </RelativeLayout>
 </layout>

@@ -36,7 +36,7 @@ public class PresetsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        PresetAdapter adapter = new PresetAdapter(this.getContext());
+        PresetAdapter adapter = new PresetAdapter(getContext());
         recyclerView.setAdapter(adapter);
     }
 }
