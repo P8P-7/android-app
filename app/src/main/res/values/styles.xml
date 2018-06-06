@@ -23,4 +23,9 @@
         <item name="actionMenuTextColor">@color/colorPrimary</item>
     </style>
 
+    <style name="AppTheme.SwitchStyle" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/defaultColor</item>
+    </style>
+
 </resources>
