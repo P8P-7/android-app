@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil;
 import nl.team_goliath.app.R;
 import nl.team_goliath.app.databinding.PresetItemBinding;
 import nl.team_goliath.app.model.Preset;
-import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusItem;
 import nl.team_goliath.app.ui.common.DataBoundListAdapter;
 
 public class PresetAdapter extends DataBoundListAdapter<Preset, PresetItemBinding> {

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.ConstraintLayout;
 import androidx.viewpager.widget.ViewPager;
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 

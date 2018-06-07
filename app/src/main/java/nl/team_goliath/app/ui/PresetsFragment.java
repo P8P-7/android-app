@@ -1,19 +1,13 @@
 package nl.team_goliath.app.ui;
 
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.protobuf.Message;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
@@ -25,8 +19,8 @@ import nl.team_goliath.app.databinding.PresetFragmentBinding;
 import nl.team_goliath.app.model.Preset;
 import nl.team_goliath.app.model.Status;
 import nl.team_goliath.app.proto.CommandMessageProto;
-import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusItem.CommandStatus;
 import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusItem;
+import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusItem.CommandStatus;
 import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusRepository;
 import nl.team_goliath.app.proto.DanceCommandProto.DanceCommand;
 import nl.team_goliath.app.proto.LineDanceCommandProto.LineDanceCommand;
