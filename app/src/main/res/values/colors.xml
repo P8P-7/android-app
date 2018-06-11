@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
-    <color name="colorAccent">#19469A</color>
+    <color name="colorAccent">#19469a</color>
 
     <color name="joystickBackgroundColor">#FFFFFF</color>
     <color name="joystickButtonColor">@color/colorAccent</color>

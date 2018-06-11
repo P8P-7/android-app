@@ -18,7 +18,7 @@ public class RepositoryViewModel extends ViewModel {
 
     private final LiveData<Resource<List<? extends Message>>> messages;
 
-    private final List<Class<? extends Message>> repositories = new ArrayList<>();
+    protected final List<Class<? extends Message>> repositories = new ArrayList<>();
 
     RepositoryViewModel() {
         messages = Transformations.map(synchronizeMessageRepo, resource -> {

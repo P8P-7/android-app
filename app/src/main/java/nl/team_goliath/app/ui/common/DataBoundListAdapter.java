@@ -113,4 +113,8 @@ public abstract class DataBoundListAdapter<T, V extends ViewDataBinding> extends
     public int getItemCount() {
         return items == null ? 0 : items.size();
     }
+
+    public List<T> getItems() {
+        return items;
+    }
 }

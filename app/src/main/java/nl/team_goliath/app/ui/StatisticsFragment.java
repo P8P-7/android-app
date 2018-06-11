@@ -57,10 +57,7 @@ public class StatisticsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        repositoryViewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
-        repositoryViewModel.watchRepo(BatteryRepository.class);
-        repositoryViewModel.watchRepo(ConfigRepository.class);
-        repositoryViewModel.watchRepo(LogRepository.class);
+        repositoryViewModel = ViewModelProviders.of(getActivity()).get(RepositoryViewModel.class);
 
         batteryRepositoryFormatter = new BatteryRepositoryFormatter();
         configRepositoryFormatter = new ConfigRepositoryFormatter();

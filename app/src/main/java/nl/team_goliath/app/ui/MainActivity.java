@@ -20,6 +20,7 @@ import java.util.Locale;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import nl.team_goliath.app.GoliathApp;
@@ -27,10 +28,15 @@ import nl.team_goliath.app.R;
 import nl.team_goliath.app.manager.EventDispatcher;
 import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.model.MessageListener;
+import nl.team_goliath.app.proto.BatteryRepositoryProto;
 import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
+import nl.team_goliath.app.proto.CommandStatusRepositoryProto;
+import nl.team_goliath.app.proto.LogRepositoryProto;
 import nl.team_goliath.app.proto.MessageCarrierProto.MessageCarrier;
+import nl.team_goliath.app.proto.ZmqConfigRepositoryProto;
 import nl.team_goliath.app.service.ZMQPublishService;
 import nl.team_goliath.app.service.ZMQSubscribeService;
+import nl.team_goliath.app.viewmodel.RepositoryViewModel;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements MessageListener, CommandSender, PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -142,6 +148,13 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
             // ie. not after orientation changes
             selectFragment(R.id.action_control);
         }
+
+        RepositoryViewModel repositoryViewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
+        repositoryViewModel.watchRepo(BatteryRepositoryProto.BatteryRepository.class);
+        repositoryViewModel.watchRepo(ZmqConfigRepositoryProto.ConfigRepository.class);
+        repositoryViewModel.watchRepo(LogRepositoryProto.LogRepository.class);
+        repositoryViewModel.watchRepo(CommandStatusRepositoryProto.CommandStatusRepository.class);
+        repositoryViewModel.getMessages().observe(this, listResource -> {});
     }
 
     @Override
