@@ -6,66 +6,136 @@
     android:layout_height="match_parent"
     tools:context=".ui.WingFragment">
 
-    <me.angrybyte.circularslider.CircularSlider
-        android:id="@+id/circular_tl"
+    <SeekBar
+        android:id="@+id/wingSpeed"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:theme="@style/AppTheme.SeekBarStyle"
+        android:progress="50"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHeight_percent="0.10" />
+
+    <ImageButton
+        android:id="@+id/leftSide_up"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:angle="3.14"
-        android:padding="15dp"
-        app:angle="3.14"
-        app:border_color="@color/joystickBorderColor"
-        app:border_thickness="11dp"
-        app:layout_constraintBottom_toTopOf="@+id/circular_bl"
+        android:theme="@style/AppTheme.WingLeftButtonStyle"
+        android:tint="@color/joystickBackgroundColor"
+        app:srcCompat="@drawable/ic_arrow_upward_black_24dp"
+        app:layout_constraintBottom_toTopOf="@id/leftSide_down"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintWidth_percent="0.20"
-        app:thumb_color="@color/joystickButtonColor"
-        app:thumb_size="20dp" />
+        app:layout_constraintHeight_percent="0.45"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
-    <me.angrybyte.circularslider.CircularSlider
-        android:id="@+id/circular_bl"
+    <ImageButton
+        android:id="@+id/leftSide_down"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:angle="3.14"
-        android:padding="15dp"
-        app:angle="3.14"
-        app:border_color="@color/joystickBorderColor"
-        app:border_thickness="11dp"
+        android:theme="@style/AppTheme.WingLeftButtonStyle"
+        android:tint="@color/joystickBackgroundColor"
+        app:srcCompat="@drawable/ic_arrow_downward_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintWidth_percent="0.20"
-        app:thumb_color="@color/joystickButtonColor"
-        app:thumb_size="20dp" />
+        app:layout_constraintHeight_percent="0.45"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
-    <me.angrybyte.circularslider.CircularSlider
-        android:id="@+id/circular_tr"
+    <ImageButton
+        android:id="@+id/rightSide_up"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="15dp"
-        app:angle="3.14"
-        app:border_color="@color/joystickBorderColor"
-        app:border_thickness="11dp"
-        app:layout_constraintBottom_toTopOf="@+id/circular_br"
+        android:theme="@style/AppTheme.WingRightButtonStyle"
+        android:tint="@color/joystickBackgroundColor"
+        app:srcCompat="@drawable/ic_arrow_upward_black_24dp"
+        app:layout_constraintBottom_toTopOf="@id/rightSide_down"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintWidth_percent="0.20"
-        app:thumb_color="@color/joystickButtonColor"
-        app:thumb_size="20dp" />
+        app:layout_constraintHeight_percent="0.45"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
-    <me.angrybyte.circularslider.CircularSlider
-        android:id="@+id/circular_br"
+    <ImageButton
+        android:id="@+id/rightSide_down"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="15dp"
-        app:angle="3.14"
-        app:border_color="@color/joystickBorderColor"
-        app:border_thickness="11dp"
+        android:theme="@style/AppTheme.WingRightButtonStyle"
+        android:tint="@color/joystickBackgroundColor"
+        app:srcCompat="@drawable/ic_arrow_downward_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintWidth_percent="0.20"
-        app:thumb_color="@color/joystickButtonColor"
-        app:thumb_size="20dp" />
+        app:layout_constraintHeight_percent="0.45"
+        style="@style/Widget.AppCompat.Button.Colored" />
+
+    <belka.us.androidtoggleswitch.widgets.ToggleSwitch
+        android:id="@+id/leftFront_wing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="6dp"
+        app:inactiveTextColor="@color/joystickBackgroundColor"
+        app:inactiveBgColor="@color/colorPrimary"
+        app:textToggleCenter="●"
+        app:textToggleLeft="←"
+        app:textToggleRight="→"
+        app:layout_constraintLeft_toRightOf="@id/leftSide_up"
+        app:layout_constraintTop_toTopOf="@id/leftSide_up"
+        app:layout_constraintWidth_percent="0.28" />
+
+    <belka.us.androidtoggleswitch.widgets.ToggleSwitch
+        android:id="@+id/leftBottom_wing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="6dp"
+        app:inactiveTextColor="@color/joystickBackgroundColor"
+        app:inactiveBgColor="@color/colorPrimary"
+        app:textToggleCenter="●"
+        app:textToggleLeft="←"
+        app:textToggleRight="→"
+        app:layout_constraintLeft_toRightOf="@id/leftSide_down"
+        app:layout_constraintBottom_toBottomOf="@id/leftSide_down"
+        app:layout_constraintWidth_percent="0.28" />
+
+    <belka.us.androidtoggleswitch.widgets.ToggleSwitch
+        android:id="@+id/rightFront_wing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="6dp"
+        app:inactiveTextColor="@color/joystickBackgroundColor"
+        app:inactiveBgColor="@color/colorPrimary"
+        app:textToggleCenter="●"
+        app:textToggleLeft="←"
+        app:textToggleRight="→"
+        app:layout_constraintRight_toLeftOf="@id/rightSide_up"
+        app:layout_constraintTop_toTopOf="@id/rightSide_up"
+        app:layout_constraintWidth_percent="0.28" />
+
+    <belka.us.androidtoggleswitch.widgets.ToggleSwitch
+        android:id="@+id/rightBottom_wing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="6dp"
+        app:inactiveTextColor="@color/joystickBackgroundColor"
+        app:inactiveBgColor="@color/colorPrimary"
+        app:textToggleCenter="●"
+        app:textToggleLeft="←"
+        app:textToggleRight="→"
+        app:layout_constraintRight_toLeftOf="@id/rightSide_down"
+        app:layout_constraintBottom_toBottomOf="@id/rightSide_down"
+        app:layout_constraintWidth_percent="0.28" />
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:tint="@color/defaultColor"
+        app:srcCompat="@drawable/ic_robot"
+        app:layout_constraintLeft_toLeftOf="@id/leftSide_down"
+        app:layout_constraintRight_toRightOf="@id/rightSide_down"
+        app:layout_constraintTop_toTopOf="@id/leftSide_up"
+        app:layout_constraintBottom_toBottomOf="@id/rightSide_down"/>
 
 </androidx.constraintlayout.ConstraintLayout>

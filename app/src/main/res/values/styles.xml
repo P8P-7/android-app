@@ -25,4 +25,16 @@
         <item name="colorControlNormal">@color/defaultColor</item>
     </style>
 
+    <style name="AppTheme.SeekBarStyle" parent="AppTheme">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme.WingLeftButtonStyle" parent="AppTheme">
+        <item name="colorAccent">@color/wingLeftColor</item>
+    </style>
+
+    <style name="AppTheme.WingRightButtonStyle" parent="AppTheme">
+        <item name="colorAccent">@color/wingRightColor</item>
+    </style>
+
 </resources>

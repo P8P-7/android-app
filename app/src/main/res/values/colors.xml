@@ -16,4 +16,9 @@
     <color name="errorColor">#E53935</color>
     <color name="fatalColor">#E53935</color>
     <color name="defaultColor">#000000</color>
+
+    <color name="wingLeftColor">#D32F2F</color>
+    <color name="wingRightColor">#388E3C</color>
+
+    <color name="wingSwitchInactive">#62769b</color>
 </resources>

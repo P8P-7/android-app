@@ -70,7 +70,9 @@ dependencies {
 
     /* Joystick */
     implementation 'io.github.controlwear:virtualjoystick:1.9.2'
-    implementation 'me.angrybyte.slider:slider:1.4.2'
+
+    /* Wings */
+    implementation 'us.belka:androidtoggleswitch:1.2.2'
 
     /* Logging */
     implementation 'com.jakewharton.timber:timber:4.7.0'
