@@ -96,7 +96,7 @@ public class PresetsFragment extends Fragment {
                         }
                     }
                 }
-                
+
                 if (adapter.get().getItems() == presetList) {
                     return;
                 }
