@@ -34,12 +34,4 @@
 
     <string name="pref_title_pub_address">Publisher address / port</string>
     <string name="pref_default_pub_address">tcp://127.0.0.1:5556</string>
-
-    <!-- Preset commands -->
-    <string name="preset_entering">Entering the Arena</string>
-    <string name="preset_dance">So you think you can Dance!?</string>
-    <string name="preset_line_dance">Line Dance</string>
-    <string name="preset_obstacle_course">Obstacle Course</string>
-    <string name="preset_wunderhorn">Das Knaben Wunderhorn</string>
-    <string name="preset_transport_rebuild">Transport and Rebuild</string>
 </resources>

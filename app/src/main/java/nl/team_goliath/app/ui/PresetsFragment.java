@@ -32,6 +32,7 @@ import nl.team_goliath.app.proto.EnterCommandProto.EnterCommand;
 import nl.team_goliath.app.proto.InteruptCommandCommandProto.InterruptCommandCommand;
 import nl.team_goliath.app.proto.LineDanceCommandProto.LineDanceCommand;
 import nl.team_goliath.app.proto.ObstacleCourseCommandProto.ObstacleCourseCommand;
+import nl.team_goliath.app.proto.SynchronizeCommandsCommandProto.SynchronizeCommandsCommand;
 import nl.team_goliath.app.proto.TransportRebuildCommandProto.TransportRebuildCommand;
 import nl.team_goliath.app.proto.WunderhornCommandProto.WunderhornCommand;
 import nl.team_goliath.app.util.AutoClearedValue;
@@ -96,7 +97,7 @@ public class PresetsFragment extends Fragment {
                         }
                     }
                 }
-                
+
                 if (adapter.get().getItems() == presetList) {
                     return;
                 }
@@ -123,6 +124,10 @@ public class PresetsFragment extends Fragment {
                 adapter.get().replace(presetList);
             } else {
                 adapter.get().replace(Collections.emptyList());
+
+                moveCallback.sendCommand(CommandMessage.newBuilder()
+                        .setSynchronizeCommandsCommand(SynchronizeCommandsCommand.newBuilder().build())
+                        .build());
             }
         });
     }
