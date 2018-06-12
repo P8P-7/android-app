@@ -111,7 +111,6 @@ public class ZMQPublishService extends Service {
                     MessageCarrier message = messages.take();
                     zSocket.sendMore("" + message.getMessageCase().getNumber());
                     zSocket.send(message.toByteArray(), 0);
-                    Timber.v("Publisher send: %s", message.toString());
                 } catch (InterruptedException ignored) {
                 }
             }

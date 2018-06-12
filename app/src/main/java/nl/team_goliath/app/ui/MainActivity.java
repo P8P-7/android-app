@@ -254,8 +254,11 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
             case R.id.action_presets:
                 frag = PresetsFragment.newInstance();
                 break;
+            case R.id.action_log:
+                frag = LogFragment.newInstance();
+                break;
             case R.id.action_statistics:
-                frag = StatisticsFragment.newInstance();
+                frag = LogFragment.newInstance();
                 break;
             case R.id.action_settings:
                 frag = PreferenceFragment.newInstance();

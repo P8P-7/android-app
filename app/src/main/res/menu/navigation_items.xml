@@ -8,6 +8,10 @@
         android:icon="@drawable/ic_tune_black_24dp"
         android:title="@string/menu_robot_presets" />
     <item
+        android:id="@+id/action_log"
+        android:icon="@drawable/ic_format_align_left_black_24dp"
+        android:title="@string/menu_log" />
+    <item
         android:id="@+id/action_statistics"
         android:icon="@drawable/ic_equalizer_black_24dp"
         android:title="@string/menu_statistics" />

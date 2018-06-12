@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import nl.team_goliath.app.R;
 import nl.team_goliath.app.adapter.MessageAdapter;
-import nl.team_goliath.app.databinding.StatisticsFragmentBinding;
+import nl.team_goliath.app.databinding.LogFragmentBinding;
 import nl.team_goliath.app.formatter.BatteryRepositoryFormatter;
 import nl.team_goliath.app.formatter.ConfigRepositoryFormatter;
 import nl.team_goliath.app.formatter.LogRepositoryFormatter;
@@ -32,24 +32,24 @@ import nl.team_goliath.app.viewmodel.RepositoryViewModel;
 /**
  * Main UI for the statistics screen.
  */
-public class StatisticsFragment extends Fragment {
+public class LogFragment extends Fragment {
     private RepositoryViewModel repositoryViewModel;
 
-    private AutoClearedValue<StatisticsFragmentBinding> binding;
+    private AutoClearedValue<LogFragmentBinding> binding;
     private AutoClearedValue<MessageAdapter> adapter;
 
     private BatteryRepositoryFormatter batteryRepositoryFormatter;
     private ConfigRepositoryFormatter configRepositoryFormatter;
     private LogRepositoryFormatter logRepositoryFormatter;
 
-    public static StatisticsFragment newInstance() {
-        return new StatisticsFragment();
+    public static LogFragment newInstance() {
+        return new LogFragment();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        StatisticsFragmentBinding dataBinding = DataBindingUtil.inflate(inflater, R.layout.statistics_fragment, container, false);
+        LogFragmentBinding dataBinding = DataBindingUtil.inflate(inflater, R.layout.log_fragment, container, false);
         binding = new AutoClearedValue<>(this, dataBinding);
         return dataBinding.getRoot();
     }
