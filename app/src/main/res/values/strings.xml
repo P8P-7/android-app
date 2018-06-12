@@ -26,12 +26,27 @@
     <string name="pref_header">Settings</string>
 
     <!-- General settings -->
-    <string name="pref_general_key">general_preference</string>
-    <string name="pref_header_general">General</string>
+    <string name="pref_networking_key">networking_preference</string>
+    <string name="pref_header_networking">Networking</string>
 
-    <string name="pref_title_sub_address">Subscriber address / port</string>
-    <string name="pref_default_sub_address">tcp://127.0.0.1:5555</string>
+    <string name="pref_title_protocol">Protocol</string>
+    <string-array name="pref_value_protocol">
+        <item>tcp</item>
+        <item>inproc</item>
+        <item>ipc</item>
+        <item>pgm</item>
+        <item>epgm</item>
+    </string-array>
+    <string name="pref_default_protocol">tcp</string>
 
-    <string name="pref_title_pub_address">Publisher address / port</string>
-    <string name="pref_default_pub_address">tcp://127.0.0.1:5556</string>
+    <string name="pref_title_address">Address</string>
+    <string name="pref_default_address">127.0.0.1</string>
+
+    <string name="pref_title_sub_port">Subscriber Port</string>
+    <string name="pref_default_sub_port">5555</string>
+
+    <string name="pref_title_pub_port">Publisher Port</string>
+    <string name="pref_default_pub_port">5556</string>
+
+    <string name="pref_title_calibrate_wings">Calibrate Wings</string>
 </resources>

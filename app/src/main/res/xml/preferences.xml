@@ -2,28 +2,46 @@
     android:title="@string/pref_header">
 
     <PreferenceScreen
-        android:icon="@drawable/ic_info_black_24dp"
-        android:key="@string/pref_general_key"
-        android:title="@string/pref_header_general">
+        android:icon="@drawable/ic_network_wifi_black_24dp"
+        android:key="@string/pref_networking_key"
+        android:title="@string/pref_header_networking">
 
         <EditTextPreference
-            android:defaultValue="@string/pref_default_sub_address"
-            android:inputType="text"
-            android:key="sub_address"
+            android:icon="@drawable/ic_network_check_black_24dp"
+            android:defaultValue="@string/pref_default_address"
+            android:key="address"
             android:maxLines="1"
-            android:selectAllOnFocus="true"
+            android:maxLength="15"
             android:singleLine="true"
-            android:title="@string/pref_title_sub_address" />
+            android:title="@string/pref_title_address"/>
 
         <EditTextPreference
-            android:defaultValue="@string/pref_default_pub_address"
-            android:inputType="text"
-            android:key="pub_address"
+            android:icon="@drawable/ic_file_download_black_24dp"
+            android:defaultValue="@string/pref_default_sub_port"
+            android:inputType="number"
+            android:key="sub_port"
             android:maxLines="1"
+            android:maxLength="5"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="@string/pref_title_pub_address" />
+            android:title="@string/pref_title_sub_port" />
+
+        <EditTextPreference
+            android:icon="@drawable/ic_file_upload_black_24dp"
+            android:defaultValue="@string/pref_default_pub_port"
+            android:inputType="number"
+            android:key="pub_port"
+            android:maxLines="1"
+            android:maxLength="5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_pub_port" />
         
     </PreferenceScreen>
+
+    <Preference
+        android:icon="@drawable/ic_save_black_24dp"
+        android:key="calibrate_wings"
+        android:title="@string/pref_title_calibrate_wings" />
 
 </PreferenceScreen>

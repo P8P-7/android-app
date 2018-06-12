@@ -4,16 +4,25 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import nl.team_goliath.app.R;
+import nl.team_goliath.app.model.CommandSender;
+import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
 
 /**
  * Main UI for the preferences screen.
  */
 public class PreferenceFragment extends PreferenceFragmentCompat {
+    private final CommandSender callback = (commandMessage) -> {
+        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            ((CommandSender) getActivity()).sendCommand(commandMessage);
+        }
+    };
+
     static PreferenceFragment newInstance() {
         return new PreferenceFragment();
     }
@@ -35,8 +44,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         // to their values. When their values change, their summaries are
         // updated to reflect the new value, per the Android Design
         // guidelines.
-        bindPreferenceSummaryToValue(findPreference("sub_address"));
-        bindPreferenceSummaryToValue(findPreference("pub_address"));
+        bindPreferenceSummaryToValue(findPreference("address"));
+        bindPreferenceSummaryToValue(findPreference("sub_port"));
+        bindPreferenceSummaryToValue(findPreference("pub_port"));
     }
 
     /**

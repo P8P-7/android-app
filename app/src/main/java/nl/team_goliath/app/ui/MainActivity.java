@@ -43,6 +43,13 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     /**
+     * TCP Components
+     */
+    private static String ADDRESS;
+    private static String SUB_PORT;
+    private static String PUB_PORT;
+
+    /**
      * TCP Addresses
      */
     private static String SUB_ADDRESS;
@@ -121,20 +128,32 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        SUB_ADDRESS = prefs.getString("sub_address", getString(R.string.pref_default_sub_address));
-        PUB_ADDRESS = prefs.getString("pub_address", getString(R.string.pref_default_pub_address));
+        ADDRESS = prefs.getString("address", getString(R.string.pref_default_address));
+        SUB_PORT = prefs.getString("sub_port", getString(R.string.pref_default_sub_port));
+        PUB_PORT = prefs.getString("pub_port", getString(R.string.pref_default_pub_port));
+
+        setAddresses();
 
         SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs1, key) -> {
             String value = prefs1.getString(key, "");
 
             switch (key) {
-                case "sub_address":
-                    SUB_ADDRESS = value;
+                case "address":
+                    ADDRESS = value;
+                    setAddresses();
+                    subscribeBinder.disconnect();
+                    subscribeBinder.connect(SUB_ADDRESS);
+                    publishBinder.disconnect();
+                    publishBinder.connect(PUB_ADDRESS);
+                case "sub_port":
+                    SUB_PORT = value;
+                    setAddresses();
                     subscribeBinder.disconnect();
                     subscribeBinder.connect(SUB_ADDRESS);
                     break;
-                case "pub_address":
-                    PUB_ADDRESS = value;
+                case "pub_port":
+                    PUB_PORT = value;
+                    setAddresses();
                     publishBinder.disconnect();
                     publishBinder.connect(PUB_ADDRESS);
                     break;
@@ -154,7 +173,8 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
         repositoryViewModel.watchRepo(ZmqConfigRepositoryProto.ConfigRepository.class);
         repositoryViewModel.watchRepo(LogRepositoryProto.LogRepository.class);
         repositoryViewModel.watchRepo(CommandStatusRepositoryProto.CommandStatusRepository.class);
-        repositoryViewModel.getMessages().observe(this, listResource -> {});
+        repositoryViewModel.getMessages().observe(this, listResource -> {
+        });
     }
 
     @Override
@@ -262,5 +282,11 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
                 .addToBackStack(preferenceScreen.getKey())
                 .commit();
         return true;
+    }
+
+    private void setAddresses() {
+        String address = "tcp://" + ADDRESS + ":";
+        SUB_ADDRESS = address + SUB_PORT;
+        PUB_ADDRESS = address + PUB_PORT;
     }
 }

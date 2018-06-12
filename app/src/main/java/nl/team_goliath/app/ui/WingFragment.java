@@ -1,5 +1,6 @@
 package nl.team_goliath.app.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,7 +25,6 @@ import nl.team_goliath.app.proto.MoveWingCommandProto.MoveWingCommand;
 import nl.team_goliath.app.proto.MoveWingCommandProto.ServoCommand;
 import nl.team_goliath.app.proto.MoveWingCommandProto.ServoCommand.Motor;
 import nl.team_goliath.app.proto.MoveWingCommandProto.ServoCommand.Direction;
-
 
 /**
  * Main UI for the wing control screen.
