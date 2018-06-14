@@ -30,16 +30,6 @@
     <string name="pref_networking_key">networking_preference</string>
     <string name="pref_header_networking">Networking</string>
 
-    <string name="pref_title_protocol">Protocol</string>
-    <string-array name="pref_value_protocol">
-        <item>tcp</item>
-        <item>inproc</item>
-        <item>ipc</item>
-        <item>pgm</item>
-        <item>epgm</item>
-    </string-array>
-    <string name="pref_default_protocol">tcp</string>
-
     <string name="pref_title_address">Address</string>
     <string name="pref_default_address">127.0.0.1</string>
 
@@ -48,6 +38,9 @@
 
     <string name="pref_title_pub_port">Publisher Port</string>
     <string name="pref_default_pub_port">5556</string>
+
+    <string name="pref_goliath_config_key">goliath_config</string>
+    <string name="pref_header_goliath_config">Goliath\'s Config</string>
 
     <string name="pref_title_calibrate_wings">Calibrate Wings</string>
 </resources>

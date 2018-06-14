@@ -16,6 +16,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -173,8 +174,6 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
         repositoryViewModel.watchRepo(ZmqConfigRepositoryProto.ConfigRepository.class);
         repositoryViewModel.watchRepo(LogRepositoryProto.LogRepository.class);
         repositoryViewModel.watchRepo(CommandStatusRepositoryProto.CommandStatusRepository.class);
-        repositoryViewModel.getMessages().observe(this, listResource -> {
-        });
     }
 
     @Override

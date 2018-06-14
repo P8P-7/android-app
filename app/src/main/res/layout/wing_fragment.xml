@@ -1,4 +1,4 @@
-<androidx.constraintlayout.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/control"
@@ -138,4 +138,4 @@
         app:layout_constraintTop_toTopOf="@id/leftSide_up"
         app:layout_constraintBottom_toBottomOf="@id/rightSide_down"/>
 
-</androidx.constraintlayout.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

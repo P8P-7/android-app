@@ -10,32 +10,19 @@ import nl.team_goliath.app.proto.MessageCarrierProto.MessageCarrier.MessageCase;
 import nl.team_goliath.app.proto.SynchronizeMessageProto.SynchronizeMessage;
 
 public class SynchronizeMessageLiveData extends LiveData<Resource<SynchronizeMessage>> {
-    private EventDispatcher dispatcher;
-
-    private MessageListener listener = new MessageListener() {
-        @Override
-        public void onMessageReceived(Message message) {
-            setValue(Resource.success((SynchronizeMessage) message));
-        }
-
-        @Override
-        public void onError(String message) {
-            setValue(Resource.error(message, null));
-        }
-    };
 
     public SynchronizeMessageLiveData(EventDispatcher dispatcher) {
-        this.dispatcher = dispatcher;
         setValue(Resource.loading(null));
-    }
+        dispatcher.addHandler(MessageCase.SYNCHRONIZEMESSAGE, new MessageListener() {
+            @Override
+            public void onMessageReceived(Message message) {
+                setValue(Resource.success((SynchronizeMessage) message));
+            }
 
-    @Override
-    protected void onActive() {
-        dispatcher.addHandler(MessageCase.SYNCHRONIZEMESSAGE, listener);
-    }
-
-    @Override
-    protected void onInactive() {
-        dispatcher.removeHandler(MessageCase.SYNCHRONIZEMESSAGE);
+            @Override
+            public void onError(String message) {
+                setValue(Resource.error(message, null));
+            }
+        });
     }
 }
