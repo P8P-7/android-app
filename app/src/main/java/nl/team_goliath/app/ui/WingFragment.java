@@ -1,9 +1,7 @@
 package nl.team_goliath.app.ui;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -23,8 +21,8 @@ import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
 import nl.team_goliath.app.proto.MoveWingCommandProto.MoveWingCommand;
 import nl.team_goliath.app.proto.MoveWingCommandProto.ServoCommand;
-import nl.team_goliath.app.proto.MoveWingCommandProto.ServoCommand.Motor;
 import nl.team_goliath.app.proto.MoveWingCommandProto.ServoCommand.Direction;
+import nl.team_goliath.app.proto.MoveWingCommandProto.ServoCommand.Motor;
 
 /**
  * Main UI for the wing control screen.
@@ -47,7 +45,7 @@ public class WingFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         final SeekBar wingSpeed = view.findViewById(R.id.wingSpeed);
@@ -83,21 +81,9 @@ public class WingFragment extends Fragment {
         }
 
         for (ImageButton button : buttons) {
-            button.setOnTouchListener((view1, motionEvent) -> {
-                Direction direction;
-                int position = 0;
-
-                if (button.getId() == R.id.leftSide_up || button.getId() == R.id.rightSide_up) {
-                    direction = Direction.UP;
-                } else {
-                    direction = Direction.DOWN;
-                }
-
-                if (button.getId() == R.id.leftSide_up || button.getId() == R.id.leftSide_down) {
-                    position = 0;
-                } else {
-                    position = 2;
-                }
+            button.setOnClickListener(v -> {
+                Direction direction = button.getId() == R.id.leftSide_up || button.getId() == R.id.rightSide_up ? Direction.UP : Direction.DOWN;
+                int position = button.getId() == R.id.leftSide_up || button.getId() == R.id.leftSide_down ? 0 : 2;
 
                 ArrayList<ServoCommand> servoCommands = new ArrayList<>();
 
@@ -112,8 +98,6 @@ public class WingFragment extends Fragment {
                             .setMoveWingCommand(buildMoveWingCommand(servoCommands))
                             .build());
                 }
-
-                return true;
             });
         }
     }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.DiffUtil;
@@ -28,7 +29,7 @@ public abstract class DataBoundListAdapter<T, V extends ViewDataBinding> extends
     private int dataVersion = 0;
 
     @Override
-    public final DataBoundViewHolder<V> onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final DataBoundViewHolder<V> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         V binding = createBinding(parent);
         return new DataBoundViewHolder<>(binding);
     }
@@ -114,6 +115,7 @@ public abstract class DataBoundListAdapter<T, V extends ViewDataBinding> extends
         return items == null ? 0 : items.size();
     }
 
+    @Nullable
     public List<T> getItems() {
         return items;
     }

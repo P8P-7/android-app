@@ -10,6 +10,7 @@ import com.google.protobuf.Message;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
@@ -24,8 +25,8 @@ import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.model.Preset;
 import nl.team_goliath.app.model.Status;
 import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
-import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusItem.CommandStatus;
 import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusItem;
+import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusItem.CommandStatus;
 import nl.team_goliath.app.proto.CommandStatusRepositoryProto.CommandStatusRepository;
 import nl.team_goliath.app.proto.DanceCommandProto.DanceCommand;
 import nl.team_goliath.app.proto.EnterCommandProto.EnterCommand;
@@ -56,7 +57,7 @@ public class PresetsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         PresetFragmentBinding dataBinding = DataBindingUtil.inflate(inflater, R.layout.preset_fragment, container, false);
         binding = new AutoClearedValue<>(this, dataBinding);
         return dataBinding.getRoot();
@@ -106,8 +107,7 @@ public class PresetsFragment extends Fragment {
                     final Observer<Boolean> commandObserver = newValue -> {
                         if (!preset.isActive() && preset.getCommandActive().getValue()) {
                             moveCallback.sendCommand(buildPresetCommand(preset));
-                        }
-                        else if (preset.isActive() && !preset.getCommandActive().getValue()){
+                        } else if (preset.isActive() && !preset.getCommandActive().getValue()) {
                             CommandMessage commandMessage = CommandMessage.newBuilder()
                                     .setInterruptCommandCommand(InterruptCommandCommand.newBuilder()
                                             .setCommandId(preset.getId())
@@ -135,7 +135,7 @@ public class PresetsFragment extends Fragment {
     private Preset getPreset(int commandId, boolean status) {
         String name = "";
 
-        switch  (commandId) {
+        switch (commandId) {
             case CommandMessage.ENTERCOMMAND_FIELD_NUMBER:
                 name = EnterCommand.getDescriptor().getOptions().getExtension(Command.commandName);
                 break;

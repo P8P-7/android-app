@@ -16,7 +16,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -129,11 +128,9 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        ADDRESS = prefs.getString("address", getString(R.string.pref_default_address));
-        SUB_PORT = prefs.getString("sub_port", getString(R.string.pref_default_sub_port));
-        PUB_PORT = prefs.getString("pub_port", getString(R.string.pref_default_pub_port));
-
-        setAddresses();
+        setAddresses(prefs.getString("address", getString(R.string.pref_default_address)),
+                prefs.getString("sub_port", getString(R.string.pref_default_sub_port)),
+                prefs.getString("pub_port", getString(R.string.pref_default_pub_port)));
 
         SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs1, key) -> {
             String value = prefs1.getString(key, "");
@@ -141,20 +138,20 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
             switch (key) {
                 case "address":
                     ADDRESS = value;
-                    setAddresses();
+                    setAddresses(ADDRESS, PUB_PORT, SUB_PORT);
                     subscribeBinder.disconnect();
                     subscribeBinder.connect(SUB_ADDRESS);
                     publishBinder.disconnect();
                     publishBinder.connect(PUB_ADDRESS);
                 case "sub_port":
                     SUB_PORT = value;
-                    setAddresses();
+                    setAddresses(ADDRESS, PUB_PORT, SUB_PORT);
                     subscribeBinder.disconnect();
                     subscribeBinder.connect(SUB_ADDRESS);
                     break;
                 case "pub_port":
                     PUB_PORT = value;
-                    setAddresses();
+                    setAddresses(ADDRESS, PUB_PORT, SUB_PORT);
                     publishBinder.disconnect();
                     publishBinder.connect(PUB_ADDRESS);
                     break;
@@ -286,9 +283,10 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
         return true;
     }
 
-    private void setAddresses() {
-        String address = "tcp://" + ADDRESS + ":";
-        SUB_ADDRESS = address + SUB_PORT;
-        PUB_ADDRESS = address + PUB_PORT;
+    private void setAddresses(String address, String publisherPort, String subscriberPort) {
+        String tcpAddress = "tcp://" + address + ":";
+
+        SUB_ADDRESS = tcpAddress + subscriberPort;
+        PUB_ADDRESS = tcpAddress + publisherPort;
     }
 }

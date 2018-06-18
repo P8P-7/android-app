@@ -19,6 +19,4 @@
 
     <color name="wingLeftColor">#D32F2F</color>
     <color name="wingRightColor">#388E3C</color>
-
-    <color name="wingSwitchInactive">#62769b</color>
 </resources>

@@ -1,18 +1,14 @@
 package nl.team_goliath.app.ui;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
 import com.google.protobuf.Descriptors;
-import com.google.protobuf.Field;
 import com.google.protobuf.Message;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProviders;
@@ -45,7 +41,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Set the default white background in the view so as to avoid transparency

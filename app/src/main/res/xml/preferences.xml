@@ -7,36 +7,37 @@
         android:title="@string/pref_header_networking">
 
         <EditTextPreference
-            android:icon="@drawable/ic_network_check_black_24dp"
             android:defaultValue="@string/pref_default_address"
+            android:digits="0123456789."
+            android:icon="@drawable/ic_network_check_black_24dp"
+            android:inputType="number|numberDecimal"
             android:key="address"
-            android:maxLines="1"
             android:maxLength="15"
             android:singleLine="true"
-            android:title="@string/pref_title_address"/>
+            android:title="@string/pref_title_address" />
 
         <EditTextPreference
-            android:icon="@drawable/ic_file_download_black_24dp"
             android:defaultValue="@string/pref_default_sub_port"
+            android:icon="@drawable/ic_file_download_black_24dp"
             android:inputType="number"
             android:key="sub_port"
-            android:maxLines="1"
             android:maxLength="5"
+            android:numeric="integer"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/pref_title_sub_port" />
 
         <EditTextPreference
-            android:icon="@drawable/ic_file_upload_black_24dp"
             android:defaultValue="@string/pref_default_pub_port"
+            android:icon="@drawable/ic_file_upload_black_24dp"
             android:inputType="number"
             android:key="pub_port"
-            android:maxLines="1"
             android:maxLength="5"
+            android:numeric="integer"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/pref_title_pub_port" />
-        
+
     </PreferenceScreen>
 
     <PreferenceScreen

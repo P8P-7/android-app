@@ -30,7 +30,7 @@ public class ControlFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         ViewPager viewPager = view.findViewById(R.id.view_pager);

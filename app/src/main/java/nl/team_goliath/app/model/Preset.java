@@ -1,27 +1,23 @@
 package nl.team_goliath.app.model;
 
-import android.util.Log;
 import android.view.View;
-import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.MutableLiveData;
 
 public class Preset {
-    @NonNull
     private final int id;
 
     @NonNull
     private final String title;
 
-    @NonNull
     private boolean active;
 
     @NonNull
     private MutableLiveData<Boolean> commandActive;
 
-    public Preset(@NonNull int id, @NonNull String title, @NonNull boolean active) {
+    public Preset(int id, @NonNull String title, boolean active) {
         this.id = id;
         this.title = title;
         this.active = active;
@@ -29,7 +25,7 @@ public class Preset {
         this.commandActive.setValue(active);
     }
 
-    public Preset(@NonNull int id, @NonNull String title) {
+    public Preset(int id, @NonNull String title) {
         this(id, title, false);
     }
 
@@ -43,6 +39,7 @@ public class Preset {
         return id;
     }
 
+    @NonNull
     public String getTitle() {
         return title;
     }
@@ -59,6 +56,7 @@ public class Preset {
         this.active = false;
     }
 
+    @NonNull
     public MutableLiveData<Boolean> getCommandActive() {
         return commandActive;
     }
@@ -69,8 +67,8 @@ public class Preset {
             Preset other = (Preset) obj;
 
             return this.id == other.getId() &&
-                   this.title.equals(other.getTitle()) &&
-                   this.active == other.isActive();
+                    this.title.equals(other.getTitle()) &&
+                    this.active == other.isActive();
         } else {
             return false;
         }
