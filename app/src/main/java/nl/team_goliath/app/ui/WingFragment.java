@@ -2,6 +2,7 @@ package nl.team_goliath.app.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -81,15 +82,21 @@ public class WingFragment extends Fragment {
         }
 
         for (ImageButton button : buttons) {
-            button.setOnClickListener(v -> {
+            button.setOnTouchListener((v, motionEvent) -> {
                 Direction direction = button.getId() == R.id.leftSide_up || button.getId() == R.id.rightSide_up ? Direction.UP : Direction.DOWN;
                 int position = button.getId() == R.id.leftSide_up || button.getId() == R.id.leftSide_down ? 0 : 2;
+
+                int speed = 0;
+
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                    speed = wingSpeed.getProgress() * 1023 / 100 + 1023;
+                }
 
                 ArrayList<ServoCommand> servoCommands = new ArrayList<>();
 
                 for (ToggleSwitch toggleSwitch : toggleSwitches) {
                     if (toggleSwitch.getCheckedTogglePosition() == position) {
-                        servoCommands.add(buildServoCommand(wingSpeed.getProgress(), direction, idToMotor(toggleSwitch.getId())));
+                        servoCommands.add(buildServoCommand(speed, direction, idToMotor(toggleSwitch.getId())));
                     }
                 }
 
@@ -98,6 +105,8 @@ public class WingFragment extends Fragment {
                             .setMoveWingCommand(buildMoveWingCommand(servoCommands))
                             .build());
                 }
+
+                return true;
             });
         }
     }
@@ -119,7 +128,7 @@ public class WingFragment extends Fragment {
 
     private ServoCommand buildServoCommand(int speed, Direction direction, Motor motor) {
         return ServoCommand.newBuilder()
-                .setSpeed(speed * 1023 / 100 + 1023)
+                .setSpeed(speed)
                 .setDirection(direction)
                 .setMotor(motor)
                 .build();
