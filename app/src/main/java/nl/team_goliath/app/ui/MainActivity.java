@@ -128,9 +128,11 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        setAddresses(prefs.getString("address", getString(R.string.pref_default_address)),
-                prefs.getString("sub_port", getString(R.string.pref_default_sub_port)),
-                prefs.getString("pub_port", getString(R.string.pref_default_pub_port)));
+        ADDRESS = prefs.getString("address", getString(R.string.pref_default_address));
+        SUB_PORT = prefs.getString("sub_port", getString(R.string.pref_default_sub_port));
+        PUB_PORT = prefs.getString("pub_port", getString(R.string.pref_default_pub_port));
+
+        setAddresses(ADDRESS, PUB_PORT, SUB_PORT);
 
         SharedPreferences.OnSharedPreferenceChangeListener listener = (prefs1, key) -> {
             String value = prefs1.getString(key, "");
