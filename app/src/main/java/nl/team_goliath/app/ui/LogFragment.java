@@ -40,7 +40,6 @@ public class LogFragment extends Fragment {
     private AutoClearedValue<MessageAdapter> adapter;
 
     private BatteryRepositoryFormatter batteryRepositoryFormatter;
-    private ConfigRepositoryFormatter configRepositoryFormatter;
     private LogRepositoryFormatter logRepositoryFormatter;
 
     public static LogFragment newInstance() {
@@ -61,7 +60,6 @@ public class LogFragment extends Fragment {
         repositoryViewModel = ViewModelProviders.of(getActivity()).get(RepositoryViewModel.class);
 
         batteryRepositoryFormatter = new BatteryRepositoryFormatter();
-        configRepositoryFormatter = new ConfigRepositoryFormatter();
         logRepositoryFormatter = new LogRepositoryFormatter(getContext());
 
         MessageAdapter adapter = new MessageAdapter();
@@ -74,11 +72,7 @@ public class LogFragment extends Fragment {
         List<SpannableStringBuilder> messageList = new ArrayList<>();
 
         for (E message : messages) {
-            if (message instanceof BatteryRepository) {
-                messageList.addAll(batteryRepositoryFormatter.format(message));
-            } else if (message instanceof ConfigRepository) {
-                messageList.addAll(configRepositoryFormatter.format(message));
-            } else if (message instanceof LogRepository) {
+            if (message instanceof LogRepository) {
                 messageList.addAll(logRepositoryFormatter.format(message));
             }
         }

@@ -13,7 +13,7 @@ import java.util.List;
 import nl.team_goliath.app.model.MessageFormatter;
 import nl.team_goliath.app.proto.BatteryRepositoryProto;
 
-public class BatteryRepositoryFormatter implements MessageFormatter {
+public class BatteryRepositoryFormatter implements MessageFormatter<SpannableStringBuilder> {
     @Override
     public List<SpannableStringBuilder> format(Message message) {
         String header = "Battery level:";

@@ -21,7 +21,7 @@ import nl.team_goliath.app.R;
 import nl.team_goliath.app.model.MessageFormatter;
 import nl.team_goliath.app.proto.LogRepositoryProto;
 
-public class LogRepositoryFormatter implements MessageFormatter {
+public class LogRepositoryFormatter implements MessageFormatter<SpannableStringBuilder> {
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:S", Locale.getDefault());
 
     private Context context;

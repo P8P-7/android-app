@@ -1,18 +1,11 @@
 package nl.team_goliath.app.formatter;
 
-import android.graphics.Typeface;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
+import android.view.ContextThemeWrapper;
 
-import com.google.protobuf.Message;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import nl.team_goliath.app.model.MessageFormatter;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
 import nl.team_goliath.app.proto.CommandExecutorConfigProto.CommandExecutorConfig;
-import nl.team_goliath.app.proto.EmotionConfigProto.EmotionConfig;
 import nl.team_goliath.app.proto.GpioConfigProto.GpioConfig;
 import nl.team_goliath.app.proto.I2cConfigProto.I2cConfig;
 import nl.team_goliath.app.proto.LoggingConfigProto.LoggingConfig;
@@ -26,171 +19,188 @@ import nl.team_goliath.app.proto.WingProto.Wing;
 import nl.team_goliath.app.proto.ZmqConfigProto.ZmqConfig;
 import nl.team_goliath.app.proto.ZmqConfigRepositoryProto.ConfigRepository;
 
-public class ConfigRepositoryFormatter implements MessageFormatter {
-    @Override
-    public List<SpannableStringBuilder> format(Message message) {
-        List<SpannableStringBuilder> stringList = new ArrayList<>();
+public class ConfigRepositoryFormatter {
 
-        ConfigRepository configRepository = (ConfigRepository) message;
+    private ContextThemeWrapper contextThemeWrapper;
+    private PreferenceScreen preferenceScreen;
 
+    public ConfigRepositoryFormatter(ContextThemeWrapper contextThemeWrapper, PreferenceScreen preferenceScreen) {
+        this.contextThemeWrapper = contextThemeWrapper;
+        this.preferenceScreen = preferenceScreen;
+    }
+
+    public void parseToPreferences(ConfigRepository configRepository) {
         ZmqConfig zmqConfig = configRepository.getZmq();
-        String zmqConfigHeader = "ZMQ config:";
 
-        SpannableStringBuilder zmqConfigStr = new SpannableStringBuilder(zmqConfigHeader);
-        zmqConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, zmqConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        zmqConfigStr
-                .append("\n")
-                .append("Subscriber port: ")
-                .append(String.valueOf(zmqConfig.getSubscriberPort()));
+        PreferenceCategory zmqCategory = new PreferenceCategory(contextThemeWrapper);
+        zmqCategory.setIcon(null);
+        zmqCategory.setKey("zmq-config");
+        zmqCategory.setTitle("ZMQ config");
 
-        zmqConfigStr
-                .append("\n")
-                .append("Publisher port: ")
-                .append(String.valueOf(zmqConfig.getPublisherPort()));
+        preferenceScreen.addPreference(zmqCategory);
 
-        stringList.add(zmqConfigStr);
+        Preference subPortPreference = new Preference(contextThemeWrapper);
+        subPortPreference.setKey("subscriber-port");
+        subPortPreference.setTitle("Subscriber port");
+        subPortPreference.setSummary(String.valueOf(zmqConfig.getSubscriberPort()));
+
+        zmqCategory.addPreference(subPortPreference);
+
+        Preference pubPortPreference = new Preference(contextThemeWrapper);
+        pubPortPreference.setKey("publisher-port");
+        pubPortPreference.setTitle("Publisher port");
+        pubPortPreference.setSummary(String.valueOf(zmqConfig.getPublisherPort()));
+
+        zmqCategory.addPreference(pubPortPreference);
 
         SerialConfig serialConfig = configRepository.getSerial();
-        String serialConfigHeader = "Serial config:";
 
-        SpannableStringBuilder serialConfigStr = new SpannableStringBuilder(serialConfigHeader);
-        serialConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, serialConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        serialConfigStr
-                .append("\n")
-                .append("Serial port: ")
-                .append(serialConfig.getPort());
+        PreferenceCategory serialCategory = new PreferenceCategory(contextThemeWrapper);
+        serialCategory.setKey("serial-config");
+        serialCategory.setTitle("Serial config");
 
-        serialConfigStr
-                .append("\n")
-                .append("Serial baudrate: ")
-                .append(String.valueOf(serialConfig.getBaudrate()));
+        preferenceScreen.addPreference(serialCategory);
 
-        stringList.add(serialConfigStr);
+        Preference serialPortPreference = new Preference(contextThemeWrapper);
+        serialPortPreference.setKey("serial-port");
+        serialPortPreference.setTitle("Serial port");
+        serialPortPreference.setSummary(serialConfig.getPort());
+
+        serialCategory.addPreference(serialPortPreference);
+
+        Preference serialBaudPreference = new Preference(contextThemeWrapper);
+        serialBaudPreference.setKey("serial-baudrate");
+        serialBaudPreference.setTitle("Serial baudrate");
+        serialBaudPreference.setSummary(String.valueOf(serialConfig.getBaudrate()));
+
+        serialCategory.addPreference(serialBaudPreference);
 
         GpioConfig gpioConfig = configRepository.getGpio();
-        String gpioConfigHeader = "GPIO config:";
 
-        SpannableStringBuilder gpioConfigStr = new SpannableStringBuilder(gpioConfigHeader);
-        gpioConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, gpioConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        PreferenceCategory gpioCategory = new PreferenceCategory(contextThemeWrapper);
+        gpioCategory.setKey("gpio-config");
+        gpioCategory.setTitle("GPIO config");
 
-        gpioConfigStr
-                .append("\n")
-                .append("GPIO Pin: ")
-                .append(String.valueOf(gpioConfig.getPin()));
+        preferenceScreen.addPreference(gpioCategory);
 
-        stringList.add(gpioConfigStr);
+        Preference gpioPinPreference = new Preference(contextThemeWrapper);
+        gpioPinPreference.setKey("gpio-pin");
+        gpioPinPreference.setTitle("GPIO Pin");
+        gpioPinPreference.setSummary(String.valueOf(gpioConfig.getPin()));
+
+        gpioCategory.addPreference(gpioPinPreference);
 
         VisionConfig visionConfig = configRepository.getVision();
-        String visionConfigHeader = "Vision config:";
 
-        SpannableStringBuilder visionConfigStr = new SpannableStringBuilder(visionConfigHeader);
-        visionConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, visionConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        PreferenceCategory visionCategory = new PreferenceCategory(contextThemeWrapper);
+        visionCategory.setKey("vision-config");
+        visionCategory.setTitle("Vision config");
 
-        visionConfigStr
-                .append("\n")
-                .append("Webcam port: ")
-                .append(String.valueOf(visionConfig.getWebcam()));
+        preferenceScreen.addPreference(visionCategory);
 
-        stringList.add(visionConfigStr);
+        Preference camPortPreference = new Preference(contextThemeWrapper);
+        camPortPreference.setKey("webcam-port");
+        camPortPreference.setTitle("Webcam port");
+        camPortPreference.setSummary(String.valueOf(visionConfig.getWebcam()));
+
+        visionCategory.addPreference(camPortPreference);
 
         ServoConfig servosConfig = configRepository.getServos();
-        String servosConfigHeader = "Servos config:";
 
-        SpannableStringBuilder servosConfigStr = new SpannableStringBuilder(servosConfigHeader);
-        servosConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, servosConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        servosConfigStr.append("\n");
+        PreferenceCategory servoCategory = new PreferenceCategory(contextThemeWrapper);
+        servoCategory.setKey("servos-config");
+        servoCategory.setTitle("Servos config");
 
-        List<Wing> wingsList = servosConfig.getWingsList();
-        for (int i = 0, wingsListSize = wingsList.size(); i < wingsListSize; i++) {
-            Wing wing = wingsList.get(i);
-            servosConfigStr.append("Wing id: ")
-                    .append(String.valueOf(wing.getId()))
-                    .append("\n");
-            servosConfigStr.append("Wing position: ")
-                    .append(wing.getPosition().name());
-            if (i != wingsList.size() - 1) {
-                servosConfigStr.append("\n");
-            }
+        preferenceScreen.addPreference(servoCategory);
+
+        for (Wing wing : servosConfig.getWingsList()) {
+            Preference wingPreference = new Preference(contextThemeWrapper);
+            wingPreference.setTitle("Wing " + wing.getId() + " position: ");
+            wingPreference.setSummary(wing.getPosition().name());
+
+            servoCategory.addPreference(wingPreference);
         }
-
-        stringList.add(servosConfigStr);
 
         I2cConfig i2cConfig = configRepository.getI2C();
-        String i2cConfigHeader = "I2C config:";
 
-        SpannableStringBuilder i2cConfigStr = new SpannableStringBuilder(i2cConfigHeader);
-        i2cConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, i2cConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        PreferenceCategory i2cCategory = new PreferenceCategory(contextThemeWrapper);
+        i2cCategory.setKey("i2c-config");
+        i2cCategory.setTitle("I2C config");
 
-        i2cConfigStr
-                .append("\n")
-                .append("I2C Device: ")
-                .append(i2cConfig.getDevice());
+        preferenceScreen.addPreference(i2cCategory);
 
-        stringList.add(i2cConfigStr);
+        Preference i2cDevicePreference = new Preference(contextThemeWrapper);
+        i2cDevicePreference.setKey("i2c-device");
+        i2cDevicePreference.setTitle("I2C Device");
+        i2cDevicePreference.setSummary(i2cConfig.getDevice());
+
+        i2cCategory.addPreference(i2cDevicePreference);
 
         MotorControllerConfig motorControllerConfig = configRepository.getMotorController();
-        String motorControllerConfigHeader = "Motor controller config:";
 
-        SpannableStringBuilder motorControllerConfigStr = new SpannableStringBuilder(motorControllerConfigHeader);
-        motorControllerConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, motorControllerConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        PreferenceCategory motorControllerCategory = new PreferenceCategory(contextThemeWrapper);
+        motorControllerCategory.setKey("motor-controller-config");
+        motorControllerCategory.setTitle("Motor controller config");
 
-        motorControllerConfigStr
-                .append("\n")
-                .append("Motor address: ")
-                .append(motorControllerConfig.getAddress())
-                .append("\n");
+        preferenceScreen.addPreference(motorControllerCategory);
 
-        List<Motor> motorsList = motorControllerConfig.getMotorsList();
-        for (int i = 0, motorsListSize = motorsList.size(); i < motorsListSize; i++) {
-            Motor motor = motorsList.get(i);
-            motorControllerConfigStr.append("Motor id: ")
-                    .append(String.valueOf(motor.getId()))
-                    .append("\n");
-            motorControllerConfigStr.append("Motor position: ")
-                    .append(motor.getPosition().name());
-            if (i != wingsList.size() - 1) {
-                motorControllerConfigStr.append("\n");
-            }
+        Preference motorControllerAddressPreference = new Preference(contextThemeWrapper);
+        motorControllerAddressPreference.setKey("motor-address");
+        motorControllerAddressPreference.setTitle("Motor address");
+        motorControllerAddressPreference.setSummary(motorControllerConfig.getAddress());
+
+        for (Motor motor : motorControllerConfig.getMotorsList()) {
+            Preference motorPreference = new Preference(contextThemeWrapper);
+            motorPreference.setKey("motor-" + motor.getId());
+            motorPreference.setTitle("Motor " + motor.getId() + " position: ");
+            motorPreference.setSummary(motor.getPosition().name());
+
+            motorControllerCategory.addPreference(motorPreference);
         }
 
-        stringList.add(motorControllerConfigStr);
-
         CommandExecutorConfig commandExecutorConfig = configRepository.getCommandExecutor();
-        String commandExecutorConfigHeader = "Command executor config";
 
-        SpannableStringBuilder commandExecutorConfigStr = new SpannableStringBuilder(commandExecutorConfigHeader);
-        commandExecutorConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, commandExecutorConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        commandExecutorConfigStr
-                .append("\n")
-                .append("Number of executors: ")
-                .append(String.valueOf(commandExecutorConfig.getNumberOfExecutors()));
+        PreferenceCategory commandExecutorCategory = new PreferenceCategory(contextThemeWrapper);
+        commandExecutorCategory.setKey("command-executor-config");
+        commandExecutorCategory.setTitle("Command executor config");
 
-        stringList.add(commandExecutorConfigStr);
+        preferenceScreen.addPreference(commandExecutorCategory);
+
+        Preference numExecutorsPreference = new Preference(contextThemeWrapper);
+        numExecutorsPreference.setKey("number-executors");
+        numExecutorsPreference.setTitle("Number of executors");
+        numExecutorsPreference.setSummary(String.valueOf(commandExecutorConfig.getNumberOfExecutors()));
+
+        commandExecutorCategory.addPreference(numExecutorsPreference);
 
         WatcherConfig watcherConfig = configRepository.getWatcher();
-        String watcherConfigHeader = "Watcher config";
 
-        SpannableStringBuilder watcherConfigStr = new SpannableStringBuilder(watcherConfigHeader);
-        watcherConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, watcherConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        watcherConfigStr
-                .append("\n")
-                .append("Polling rate: ")
-                .append(String.valueOf(watcherConfig.getPollingRate()));
+        PreferenceCategory watcherCategory = new PreferenceCategory(contextThemeWrapper);
+        watcherCategory.setKey("watcher-config");
+        watcherCategory.setTitle("Watcher config");
 
-        stringList.add(watcherConfigStr);
+        preferenceScreen.addPreference(watcherCategory);
+
+        Preference pollingRatePreference = new Preference(contextThemeWrapper);
+        pollingRatePreference.setKey("polling-rate");
+        pollingRatePreference.setTitle("Polling rate");
+        pollingRatePreference.setSummary(String.valueOf(watcherConfig.getPollingRate()));
+
+        watcherCategory.addPreference(pollingRatePreference);
 
         LoggingConfig loggingConfig = configRepository.getLogging();
-        String loggingConfigHeader = "Logging config";
 
-        SpannableStringBuilder loggingConfigStr = new SpannableStringBuilder(loggingConfigHeader);
-        loggingConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, loggingConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        loggingConfigStr
-                .append("\n")
-                .append("Severity level: ")
-                .append(String.valueOf(loggingConfig.getSeverityLevel().name()));
+        PreferenceCategory loggingCategory = new PreferenceCategory(contextThemeWrapper);
+        loggingCategory.setKey("logging-config");
+        loggingCategory.setTitle("Logging config");
 
-        stringList.add(loggingConfigStr);
+        preferenceScreen.addPreference(loggingCategory);
 
-        return stringList;
+        Preference severityLevelPreference = new Preference(contextThemeWrapper);
+        severityLevelPreference.setKey("severity-level");
+        severityLevelPreference.setTitle("Severity level");
+        severityLevelPreference.setSummary(String.valueOf(loggingConfig.getSeverityLevel().name()));
+
+        loggingCategory.addPreference(severityLevelPreference);
     }
 }
