@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
                     subscribeBinder.connect(SUB_ADDRESS);
                     publishBinder.disconnect();
                     publishBinder.connect(PUB_ADDRESS);
+                    break;
                 case "sub_port":
                     SUB_PORT = value;
                     setAddresses(ADDRESS, PUB_PORT, SUB_PORT);
