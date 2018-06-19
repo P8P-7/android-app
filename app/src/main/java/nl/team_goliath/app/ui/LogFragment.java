@@ -93,10 +93,17 @@ public class LogFragment extends Fragment {
             // we don't need any null checks here for the adapter since LiveData guarantees that
             // it won't call us if fragment is stopped or not started.
             if (resource.status == Status.SUCCESS && !resource.data.isEmpty()) {
-                adapter.get().replace(format(resource.data));
-            } else {
-                //noinspection ConstantConditions
-                adapter.get().replace(Collections.emptyList());
+                ArrayList<Message> messages = new ArrayList<>();
+
+                for (Message message : resource.data) {
+                    if (message instanceof LogRepository) {
+                        messages.add(message);
+                    }
+                }
+
+                if (!messages.isEmpty()) {
+                    adapter.get().replace(format(resource.data));
+                }
             }
         });
     }

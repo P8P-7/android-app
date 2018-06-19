@@ -155,23 +155,6 @@ public class ConfigRepositoryFormatter implements MessageFormatter {
 
         stringList.add(motorControllerConfigStr);
 
-        EmotionConfig emotionConfig = configRepository.getEmotions();
-        String emotionConfigHeader = "Emotion config:";
-
-        SpannableStringBuilder emotionConfigStr = new SpannableStringBuilder(emotionConfigHeader);
-        emotionConfigStr.setSpan(new StyleSpan(Typeface.BOLD), 0, emotionConfigHeader.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        emotionConfigStr
-                .append("\n")
-                .append("Emotion host: ")
-                .append(emotionConfig.getHost());
-
-        emotionConfigStr
-                .append("\n")
-                .append("Emotion port: ")
-                .append(String.valueOf(emotionConfig.getPort()));
-
-        stringList.add(emotionConfigStr);
-
         CommandExecutorConfig commandExecutorConfig = configRepository.getCommandExecutor();
         String commandExecutorConfigHeader = "Command executor config";
 

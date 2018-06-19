@@ -9,6 +9,14 @@ buildscript {
     }
 }
 
+allprojects {
+    repositories {
+        maven {
+            url 'https://jitpack.io'
+        }
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'com.github.ben-manes.versions'
@@ -82,6 +90,9 @@ dependencies {
 
     /* ZeroMQ Message Queue */
     implementation 'org.zeromq:jeromq:0.4.3'
+
+    /* Graphs */
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
     /* Testing */
     testImplementation 'junit:junit:4.12'

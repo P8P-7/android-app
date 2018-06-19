@@ -60,6 +60,7 @@ public class PresetsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         PresetFragmentBinding dataBinding = DataBindingUtil.inflate(inflater, R.layout.preset_fragment, container, false);
         binding = new AutoClearedValue<>(this, dataBinding);
+
         return dataBinding.getRoot();
     }
 
@@ -87,7 +88,9 @@ public class PresetsFragment extends Fragment {
                     }
                 }
 
-                if (repository != null) {
+                if (repository == null) {
+                    return;
+                } else {
                     for (CommandStatusItem item : repository.getStatusList()) {
                         boolean status = item.getCommandStatus() == CommandStatus.STARTED;
 
@@ -124,10 +127,6 @@ public class PresetsFragment extends Fragment {
                 adapter.get().replace(presetList);
             } else {
                 adapter.get().replace(Collections.emptyList());
-
-                moveCallback.sendCommand(CommandMessage.newBuilder()
-                        .setSynchronizeCommandsCommand(SynchronizeCommandsCommand.newBuilder().build())
-                        .build());
             }
         });
     }

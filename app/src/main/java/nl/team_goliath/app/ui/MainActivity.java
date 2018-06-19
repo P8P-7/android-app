@@ -33,6 +33,7 @@ import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
 import nl.team_goliath.app.proto.CommandStatusRepositoryProto;
 import nl.team_goliath.app.proto.LogRepositoryProto;
 import nl.team_goliath.app.proto.MessageCarrierProto.MessageCarrier;
+import nl.team_goliath.app.proto.SystemStatusRepositoryProto;
 import nl.team_goliath.app.proto.ZmqConfigRepositoryProto;
 import nl.team_goliath.app.service.ZMQPublishService;
 import nl.team_goliath.app.service.ZMQSubscribeService;
@@ -173,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
         repositoryViewModel.watchRepo(ZmqConfigRepositoryProto.ConfigRepository.class);
         repositoryViewModel.watchRepo(LogRepositoryProto.LogRepository.class);
         repositoryViewModel.watchRepo(CommandStatusRepositoryProto.CommandStatusRepository.class);
+        repositoryViewModel.watchRepo(SystemStatusRepositoryProto.SystemStatusRepository.class);
     }
 
     @Override
@@ -201,9 +203,6 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
             switch (messageCase) {
                 case COMMANDMESSAGE:
                     handler.onMessageReceived(messageCarrier.getCommandMessage());
-                    break;
-                case EMOTIONMESSAGE:
-                    handler.onMessageReceived(messageCarrier.getEmotionMessage());
                     break;
                 case SYNCHRONIZEMESSAGE:
                     handler.onMessageReceived(messageCarrier.getSynchronizeMessage());
@@ -256,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
                 frag = LogFragment.newInstance();
                 break;
             case R.id.action_statistics:
-                frag = LogFragment.newInstance();
+                frag = StatisticsFragment.newInstance();
                 break;
             case R.id.action_settings:
                 frag = PreferenceFragment.newInstance();

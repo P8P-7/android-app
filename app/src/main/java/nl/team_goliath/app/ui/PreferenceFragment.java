@@ -30,12 +30,6 @@ import nl.team_goliath.app.viewmodel.RepositoryViewModel;
 public class PreferenceFragment extends PreferenceFragmentCompat {
     private PreferenceScreen goliathConfig;
 
-    private final CommandSender callback = (commandMessage) -> {
-        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
-            ((CommandSender) getActivity()).sendCommand(commandMessage);
-        }
-    };
-
     static PreferenceFragment newInstance() {
         return new PreferenceFragment();
     }
