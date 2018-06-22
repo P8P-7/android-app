@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -243,9 +244,12 @@ public class MainActivity extends AppCompatActivity implements MessageListener, 
     private void selectFragment(int id) {
         Fragment frag = null;
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+        
         // Init corresponding fragment
         switch (id) {
             case R.id.action_control:
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 frag = ControlFragment.newInstance();
                 break;
             case R.id.action_presets:

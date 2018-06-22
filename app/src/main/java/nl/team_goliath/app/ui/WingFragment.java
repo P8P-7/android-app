@@ -83,14 +83,14 @@ public class WingFragment extends Fragment {
 
         for (ImageButton button : buttons) {
             button.setOnTouchListener((v, motionEvent) -> {
+                if (motionEvent.getAction() != MotionEvent.ACTION_DOWN && motionEvent.getAction() != MotionEvent.ACTION_UP) {
+                    return false;
+                }
+
                 Direction direction = button.getId() == R.id.leftSide_up || button.getId() == R.id.rightSide_up ? Direction.UP : Direction.DOWN;
                 int position = button.getId() == R.id.leftSide_up || button.getId() == R.id.leftSide_down ? 0 : 2;
 
-                int speed = 0;
-
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN || motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-                    speed = wingSpeed.getProgress() * 1023 / 100 + 1023;
-                }
+                int speed = motionEvent.getAction() == MotionEvent.ACTION_DOWN ? wingSpeed.getProgress() * 1023 / 100 : 0;
 
                 ArrayList<ServoCommand> servoCommands = new ArrayList<>();
 

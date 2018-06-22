@@ -9,6 +9,13 @@
 
     <string name="unknown_error">Unknown Error</string>
 
+    <string name="arm_tucked">Tucked</string>
+    <string name="arm_high">High</string>
+    <string name="arm_med">Medium</string>
+    <string name="arm_low">Low</string>
+
+    <string name="arm_grip">Grip</string>
+
     <!-- Strings related to Settings -->
     <string name="pref_header">Settings</string>
 

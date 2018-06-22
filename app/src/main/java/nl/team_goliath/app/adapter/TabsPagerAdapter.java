@@ -4,6 +4,7 @@ package nl.team_goliath.app.adapter;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import nl.team_goliath.app.ui.ArmFragment;
 import nl.team_goliath.app.ui.MotorFragment;
 import nl.team_goliath.app.ui.WingFragment;
 
@@ -20,6 +21,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 return MotorFragment.newInstance();
             case 1:
                 return WingFragment.newInstance();
+            case 2:
+                return ArmFragment.newInstance();
             default:
                 return null;
         }
@@ -27,7 +30,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -37,6 +40,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 return "Control motors";
             case 1:
                 return "Control wings";
+            case 2:
+                return "Control arms";
             default:
                 return null;
         }

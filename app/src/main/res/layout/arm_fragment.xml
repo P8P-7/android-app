@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <Button
+        android:id="@+id/armTucked_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:drawableStart="@drawable/ic_arrow_back_black_24dp"
+        android:text="@string/arm_tucked"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.33"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <Button
+        android:id="@+id/armHigh_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:drawableEnd="@drawable/ic_call_made_black_24dp"
+        android:text="@string/arm_high"
+        app:layout_constraintLeft_toRightOf="@id/armTucked_button"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.33"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <Button
+        android:id="@+id/armMed_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:drawableEnd="@drawable/ic_arrow_forward_black_24dp"
+        android:text="@string/arm_med"
+        app:layout_constraintLeft_toRightOf="@id/armTucked_button"
+        app:layout_constraintTop_toBottomOf="@id/armHigh_button"
+        app:layout_constraintHeight_percent="0.33"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <Button
+        android:id="@+id/armLow_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:drawableEnd="@drawable/ic_call_received_black_24dp"
+        android:text="@string/arm_low"
+        app:layout_constraintLeft_toRightOf="@id/armTucked_button"
+        app:layout_constraintTop_toBottomOf="@id/armMed_button"
+        app:layout_constraintHeight_percent="0.33"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <Button
+        android:id="@+id/grip_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:drawableBottom="@drawable/ic_swap_horiz_white_24dp"
+        android:text="@string/arm_grip"
+        app:layout_constraintLeft_toRightOf="@id/armMed_button"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintWidth_percent="0.4"
+        style="@style/Widget.AppCompat.Button.Colored" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
