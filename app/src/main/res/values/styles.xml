@@ -6,7 +6,22 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimary</item>
 
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="preferenceTheme">@style/PreferenceTheme</item>
+    </style>
+
+    <style name="PreferenceTheme" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceCategoryStyle">@style/PreferenceCategoryStyle</item>
+        <item name="preferenceStyle">@style/PreferenceStyle</item>
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0dp</item>
+    </style>
+
+    <style name="PreferenceCategoryStyle" parent="@style/Preference.Category.Material">
+        <item name="android:layout">@layout/category_header</item>
+    </style>
+
+    <style name="PreferenceStyle" parent="@style/Preference.Material">
+        <item name="iconSpaceReserved">false</item>
     </style>
 
     <style name="AppTheme.ToolBarStyle" parent="Theme.AppCompat">

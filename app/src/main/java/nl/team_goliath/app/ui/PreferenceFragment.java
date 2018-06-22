@@ -1,25 +1,22 @@
 package nl.team_goliath.app.ui;
 
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
-import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
-
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import nl.team_goliath.app.R;
-import nl.team_goliath.app.model.CommandSender;
+import nl.team_goliath.app.formatter.ConfigRepositoryFormatter;
 import nl.team_goliath.app.model.Status;
 import nl.team_goliath.app.proto.ZmqConfigRepositoryProto.ConfigRepository;
 import nl.team_goliath.app.viewmodel.RepositoryViewModel;
@@ -58,7 +55,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
             bindPreferenceSummaryToValue(findPreference("pub_port"));
         }
 
-        goliathConfig = (PreferenceScreen) this.findPreference("goliath_config");
+        goliathConfig = (PreferenceScreen) findPreference("goliath_config");
 
         RepositoryViewModel repositoryViewModel = ViewModelProviders.of(getActivity()).get(RepositoryViewModel.class);
         initList(repositoryViewModel);
@@ -109,62 +106,21 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     }
 
     private void initList(RepositoryViewModel viewModel) {
+        TypedValue themeTypedValue = new TypedValue();
+        getActivity().getTheme().resolveAttribute(R.attr.preferenceTheme, themeTypedValue, true);
+        ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(getActivity(), themeTypedValue.resourceId);
+
+        ConfigRepositoryFormatter configRepositoryFormatter = new ConfigRepositoryFormatter(contextThemeWrapper, goliathConfig);
+
         viewModel.getMessages().observe(this, resource -> {
             if (resource.status == Status.SUCCESS && !resource.data.isEmpty() && goliathConfig != null) {
-                ConfigRepository repository = ConfigRepository.newBuilder().build();
-
-                for (Message repo : resource.data) {
-                    if (repo instanceof ConfigRepository) {
-                        repository = (ConfigRepository) repo;
-                    }
-                }
-
-                for (Map.Entry<Descriptors.FieldDescriptor, Object> config : repository.getAllFields().entrySet()) {
-                    PreferenceCategory category = new PreferenceCategory(getActivity());
-
-                    String categoryName = config.getKey().toString().substring(config.getKey().toString().lastIndexOf('.') + 1);
-
-                    category.setKey(categoryName);
-                    category.setTitle(toTitleCase(categoryName));
-
-                    goliathConfig.addPreference(category);
-
-                    Message value = (Message) config.getValue();
-
-                    for (Map.Entry<Descriptors.FieldDescriptor, Object> setting : value.getAllFields().entrySet()) {
-                        Preference preference = new Preference(getActivity());
-                        Preference preferenceValue = new Preference(getActivity());
-
-                        String settingName = setting.getKey().toString().substring(setting.getKey().toString().lastIndexOf('.') + 1);
-
-                        preference.setKey(settingName);
-                        preference.setTitle(toTitleCase(settingName));
-
-                        preferenceValue.setKey(settingName + "_value");
-                        preferenceValue.setTitle("\t\t\t\t" + setting.getValue().toString());
-
-                        category.addPreference(preference);
-                        category.addPreference(preferenceValue);
+                for (Message message : resource.data) {
+                    if (message instanceof ConfigRepository) {
+                        configRepositoryFormatter.parseToPreferences((ConfigRepository) message);
+                        break;
                     }
                 }
             }
         });
-    }
-
-    private String toTitleCase(String input) {
-        input = input.replace('_', ' ');
-        StringBuilder output = new StringBuilder();
-
-        for (int i = 0; i < input.length(); i++) {
-            if (i == 0) {
-                output.append(Character.toUpperCase(input.charAt(i)));
-            } else if (input.charAt(i - 1) == ' ') {
-                output.append(Character.toUpperCase(input.charAt(i)));
-            } else {
-                output.append(input.charAt(i));
-            }
-        }
-
-        return output.toString();
     }
 }
