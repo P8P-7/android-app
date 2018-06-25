@@ -35,16 +35,15 @@ public class ArmFragment extends Fragment {
         return inflater.inflate(R.layout.arm_fragment, container, false);
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         view.findViewById(R.id.armTucked_button).setOnClickListener(v -> {
             moveCallback.sendCommand(CommandMessage.newBuilder()
-                        .setMoveArmCommand(MoveArmCommand.newBuilder()
-                                .setPosition(MoveArmCommand.ArmPosition.TUCKED)
-                                .build())
+                    .setMoveArmCommand(MoveArmCommand.newBuilder()
+                            .setPosition(MoveArmCommand.ArmPosition.TUCKED)
+                            .build())
                     .build());
         });
 
@@ -73,11 +72,9 @@ public class ArmFragment extends Fragment {
         });
 
         view.findViewById(R.id.grip_button).setOnClickListener((v) -> {
-            if (gripping) {
-                ((Button) v).setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, R.drawable.ic_swap_horiz_white_24dp);
-            } else {
-                ((Button) v).setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, R.drawable.ic_compare_arrows_white_24dp);
-            }
+            ((Button) v).setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, gripping ?
+                    R.drawable.ic_swap_horiz_white_24dp :
+                    R.drawable.ic_compare_arrows_white_24dp);
 
             moveCallback.sendCommand(CommandMessage.newBuilder()
                     .setGripCommand(GripCommand.newBuilder()
