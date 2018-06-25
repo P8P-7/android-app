@@ -7,8 +7,17 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/temperatureChart"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.5" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/batteryChart"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/temperatureChart"
+        app:layout_constraintHeight_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

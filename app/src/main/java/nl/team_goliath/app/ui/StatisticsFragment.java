@@ -22,12 +22,16 @@ import androidx.lifecycle.ViewModelProviders;
 import nl.team_goliath.app.R;
 import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.model.Status;
+import nl.team_goliath.app.proto.BatteryRepositoryProto.BatteryRepository;
 import nl.team_goliath.app.proto.SystemStatusRepositoryProto.SystemStatusRepository;
 import nl.team_goliath.app.viewmodel.RepositoryViewModel;
 
 public class StatisticsFragment extends Fragment {
     private List<Entry> temperatureData;
-    LineChart temperatureChart;
+    private LineChart temperatureChart;
+
+    private List<Entry> batteryData;
+    private LineChart batteryChart;
 
     private final CommandSender callback = (commandMessage) -> {
         if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
@@ -43,6 +47,7 @@ public class StatisticsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         temperatureData = new ArrayList<>();
+        batteryData = new ArrayList<>();
         return inflater.inflate(R.layout.statistics_fragment, container, false);
     }
 
@@ -51,34 +56,52 @@ public class StatisticsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         temperatureChart = getView().findViewById(R.id.temperatureChart);
+        batteryChart = getView().findViewById(R.id.batteryChart);
+
         initList(ViewModelProviders.of(getActivity()).get(RepositoryViewModel.class));
     }
 
     private void initList(RepositoryViewModel viewModel) {
         viewModel.getMessages().observe(this, resource -> {
             if (resource.status == Status.SUCCESS && !resource.data.isEmpty()) {
-                SystemStatusRepository systemStatusRepository = null;
-
                 for (Message message : resource.data) {
                     if (message instanceof SystemStatusRepository) {
-                        systemStatusRepository = (SystemStatusRepository) message;
+                        updateTemperatureGraph(((SystemStatusRepository) message).getTemperature());
+                    } else if (message instanceof BatteryRepository) {
+                        updateBatteryGraph(((BatteryRepository) message).getLevel());
                     }
-                }
-
-                if (systemStatusRepository != null) {
-                    updateTemperatureGraph(systemStatusRepository.getTemperature());
                 }
             }
         });
     }
 
     private void updateTemperatureGraph(double newData) {
+        if (temperatureData.size() > 20) {
+            temperatureData.remove(0);
+        }
+
         temperatureData.add(new Entry((float) temperatureData.size() + 1, (float) newData));
 
         LineDataSet lineDataSet = new LineDataSet(temperatureData, "Temperature");
-        lineDataSet.setColor(R.color.fatalColor);
+        lineDataSet.setCircleColor(getResources().getColor(R.color.fatalColor));
+        lineDataSet.setColor(getResources().getColor(R.color.fatalColor));
 
         temperatureChart.setData(new LineData(lineDataSet));
         temperatureChart.invalidate();
+    }
+
+    private void updateBatteryGraph(double newData) {
+        if (batteryData.size() > 20) {
+            batteryData.remove(0);
+        }
+
+        batteryData.add(new Entry((float) batteryData.size() + 1, (float) newData));
+
+        LineDataSet lineDataSet = new LineDataSet(batteryData, "Battery");
+        lineDataSet.setCircleColor(getResources().getColor(R.color.debugColor));
+        lineDataSet.setColor(getResources().getColor(R.color.debugColor));
+
+        batteryChart.setData(new LineData(lineDataSet));
+        batteryChart.invalidate();
     }
 }
