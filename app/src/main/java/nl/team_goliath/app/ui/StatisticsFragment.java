@@ -92,8 +92,7 @@ public class StatisticsFragment extends Fragment {
             temperatureData.remove(0);
         }
 
-        temperatureData.add(new Entry((float) temperatureX, (float) newData));
-        temperatureX++;
+        temperatureData.add(new Entry((float) temperatureX++, (float) newData));
 
         LineDataSet lineDataSet = new LineDataSet(temperatureData, "°C");
         lineDataSet.setCircleColor(getResources().getColor(R.color.fatalColor));
@@ -108,10 +107,9 @@ public class StatisticsFragment extends Fragment {
             batteryData.remove(0);
         }
 
-        batteryData.add(new Entry((float) batteryX, (float) newData));
-        batteryX++;
+        batteryData.add(new Entry((float) batteryX++, (float) newData));
 
-        LineDataSet lineDataSet = new LineDataSet(batteryData, "∆V");
+        LineDataSet lineDataSet = new LineDataSet(batteryData, "%");
         lineDataSet.setCircleColor(getResources().getColor(R.color.debugColor));
         lineDataSet.setColor(getResources().getColor(R.color.debugColor));
 
