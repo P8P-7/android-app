@@ -83,10 +83,26 @@ public class MotorFragment extends Fragment {
     private CommandMessage buildMoveCommand(int angle, int strength, List<MotorCommand.Motor> motors) {
         List<MotorCommand> motorCommands = new ArrayList<>();
 
+        MotorCommand.Gear gear = MotorCommand.Gear.LOCK;
+
+        int speed = (int) Math.ceil(strength * 2.55);
+
+        if (speed != 0) {
+            // Forward = backward
+            switch (angle) {
+                case 90:
+                    gear = MotorCommand.Gear.BACKWARD;
+                    break;
+                case 270:
+                    gear = MotorCommand.Gear.FORWARD;
+                    break;
+            }
+        }
+
         for (MotorCommand.Motor motor : motors) {
             motorCommands.add(MotorCommand.newBuilder()
-                    .setSpeed((int) Math.ceil(strength * 2.55))
-                    .setGear(angle < 180 ? MotorCommand.Gear.FORWARD : MotorCommand.Gear.BACKWARD)
+                    .setSpeed(speed)
+                    .setGear(gear)
                     .setMotor(motor)
                     .build());
         }
