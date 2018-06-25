@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -29,9 +30,11 @@ import nl.team_goliath.app.viewmodel.RepositoryViewModel;
 public class StatisticsFragment extends Fragment {
     private List<Entry> temperatureData;
     private LineChart temperatureChart;
+    private int temperatureX = 0;
 
     private List<Entry> batteryData;
     private LineChart batteryChart;
+    private int batteryX = 0;
 
     private final CommandSender callback = (commandMessage) -> {
         if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
@@ -55,8 +58,17 @@ public class StatisticsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Description temperatureDescription = new Description();
+        temperatureDescription.setText("Temperature");
+
         temperatureChart = getView().findViewById(R.id.temperatureChart);
+        temperatureChart.setDescription(temperatureDescription);
+
+        Description batteryDescription = new Description();
+        batteryDescription.setText("Battery");
+
         batteryChart = getView().findViewById(R.id.batteryChart);
+        batteryChart.setDescription(batteryDescription);
 
         initList(ViewModelProviders.of(getActivity()).get(RepositoryViewModel.class));
     }
@@ -76,13 +88,14 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void updateTemperatureGraph(double newData) {
-        if (temperatureData.size() > 20) {
+        if (temperatureData.size() == 20) {
             temperatureData.remove(0);
         }
 
-        temperatureData.add(new Entry((float) temperatureData.size() + 1, (float) newData));
+        temperatureData.add(new Entry((float) temperatureX, (float) newData));
+        temperatureX++;
 
-        LineDataSet lineDataSet = new LineDataSet(temperatureData, "Temperature");
+        LineDataSet lineDataSet = new LineDataSet(temperatureData, "°C");
         lineDataSet.setCircleColor(getResources().getColor(R.color.fatalColor));
         lineDataSet.setColor(getResources().getColor(R.color.fatalColor));
 
@@ -91,13 +104,14 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void updateBatteryGraph(double newData) {
-        if (batteryData.size() > 20) {
+        if (batteryData.size() == 20) {
             batteryData.remove(0);
         }
 
-        batteryData.add(new Entry((float) batteryData.size() + 1, (float) newData));
+        batteryData.add(new Entry((float) batteryX, (float) newData));
+        batteryX++;
 
-        LineDataSet lineDataSet = new LineDataSet(batteryData, "Battery");
+        LineDataSet lineDataSet = new LineDataSet(batteryData, "∆V");
         lineDataSet.setCircleColor(getResources().getColor(R.color.debugColor));
         lineDataSet.setColor(getResources().getColor(R.color.debugColor));
 
