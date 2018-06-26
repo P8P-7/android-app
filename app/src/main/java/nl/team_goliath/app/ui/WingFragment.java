@@ -106,7 +106,7 @@ public class WingFragment extends Fragment {
                             .build());
                 }
 
-                return true;
+                return v.performClick();
             });
         }
     }
