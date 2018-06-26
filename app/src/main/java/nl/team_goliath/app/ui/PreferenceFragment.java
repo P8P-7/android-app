@@ -9,6 +9,7 @@ import com.google.protobuf.Message;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -17,7 +18,11 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import nl.team_goliath.app.R;
 import nl.team_goliath.app.formatter.ConfigRepositoryFormatter;
+import nl.team_goliath.app.model.CommandSender;
 import nl.team_goliath.app.model.Status;
+import nl.team_goliath.app.proto.CommandMessageProto.CommandMessage;
+import nl.team_goliath.app.proto.SetWingPositionCommandProto.SetWingPositionCommand;
+import nl.team_goliath.app.proto.SetWingPositionCommandProto.SetWingPositionCommand.Position;
 import nl.team_goliath.app.proto.ZmqConfigRepositoryProto.ConfigRepository;
 import nl.team_goliath.app.viewmodel.RepositoryViewModel;
 
@@ -26,6 +31,13 @@ import nl.team_goliath.app.viewmodel.RepositoryViewModel;
  */
 public class PreferenceFragment extends PreferenceFragmentCompat {
     private PreferenceScreen goliathConfig;
+
+    private final CommandSender moveCallback = (commandMessage) -> {
+        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            ((CommandSender) getActivity()).sendCommand(commandMessage);
+        }
+    };
+
 
     static PreferenceFragment newInstance() {
         return new PreferenceFragment();
@@ -58,6 +70,17 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         goliathConfig = (PreferenceScreen) findPreference("goliath_config");
 
         RepositoryViewModel repositoryViewModel = ViewModelProviders.of(getActivity()).get(RepositoryViewModel.class);
+
+        findPreference("calibrate_wings").setOnPreferenceClickListener(preference -> {
+            moveCallback.sendCommand(CommandMessage.newBuilder()
+                    .setSetWingPositionCommand(SetWingPositionCommand.newBuilder()
+                            .setWingPosition(Position.DEFAULT)
+                            .build())
+                    .build());
+
+            return true;
+        });
+
         initList(repositoryViewModel);
     }
 
